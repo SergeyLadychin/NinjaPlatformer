@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GravityAdventure
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerCharacterController : MonoBehaviour
     {
         public float maxSpeed = 7f;
         public float jumpForce = 100f;
@@ -16,7 +16,7 @@ namespace GravityAdventure
         private const float groundCheckRadius = 0.2f;
         private Transform groundCheck;
         private bool isGrounded;
-        private bool jump;
+        
         private Animator anim;
 
         void Awake()
@@ -38,39 +38,32 @@ namespace GravityAdventure
             }
 
             anim.SetBool("Ground", isGrounded);
+            anim.SetFloat("vSpeed", _rigidbody2D.velocity.y);
+        }
 
+        public void Move(float move, bool jump)
+        {
             if (isGrounded || airControl)
             {
-                var h = Input.GetAxis("Horizontal");
-                _rigidbody2D.velocity = new Vector2(h * maxSpeed, _rigidbody2D.velocity.y);
+                _rigidbody2D.velocity = new Vector2(move * maxSpeed, _rigidbody2D.velocity.y);
 
-                anim.SetFloat("Speed", Mathf.Abs(h));
+                anim.SetFloat("Speed", Mathf.Abs(move));
 
-                if (h > 0 && !facingRight)
+                if (move > 0 && !facingRight)
                 {
                     Flip();
                 }
-                else if (h < 0 && facingRight)
+                else if (move < 0 && facingRight)
                 {
                     Flip();
                 }
             }
 
-            if (jump && isGrounded)
+            if (jump && isGrounded && anim.GetBool("Ground"))
             {
                 isGrounded = false;
                 anim.SetBool("Ground", false);
                 _rigidbody2D.AddForce(new Vector2(0f, jumpForce));
-            }
-
-            jump = false;
-        }
-
-        void Update()
-        {
-            if (!jump)
-            {
-                jump = Input.GetButtonDown("Jump");
             }
         }
 
