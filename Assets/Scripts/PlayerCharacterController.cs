@@ -9,6 +9,8 @@ namespace GravityAdventure
         public float maxSpeed = 7f;
         public float jumpForce = 100f;
         public bool airControl = true;
+        [Range(0f, 1f)]
+        public float airControlDegree = 1f;
         public LayerMask whatIsGround;
 
         private Rigidbody2D _rigidbody2D;
@@ -45,7 +47,14 @@ namespace GravityAdventure
         {
             if (isGrounded || airControl)
             {
-                _rigidbody2D.velocity = new Vector2(move * maxSpeed, _rigidbody2D.velocity.y);
+                var velocity = move * maxSpeed;
+
+                if (!isGrounded && airControl)
+                {
+                    velocity = Mathf.Lerp(_rigidbody2D.velocity.x, velocity, airControlDegree);
+                }
+
+                _rigidbody2D.velocity = new Vector2(velocity, _rigidbody2D.velocity.y);
 
                 anim.SetFloat("Speed", Mathf.Abs(move));
 
