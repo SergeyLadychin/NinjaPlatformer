@@ -13,24 +13,39 @@ namespace GravityAdventure
         public float airControlDegree = 1f;
         public LayerMask whatIsGround;
 
+        public PlayerState state;
+
+        public bool canClimb
+        {
+            get { return canClimbInternal; }
+            set
+            {
+                if (climbing)
+                    _rigidbody2D.gravityScale = 1.0f;
+
+                climbing = false;
+                canClimbInternal = value;
+            }
+        }
+
         private Rigidbody2D _rigidbody2D;
         private bool facingRight = true;
-        private const float groundCheckRadius = 0.2f;
+        private const float groundCheckRadius = 0.1f;
         private Transform groundCheck;
-        private bool isGrounded;
-        
-        private Animator anim;
+
+        private bool canClimbInternal;
+        private bool climbing;
 
         void Awake()
         {
             _rigidbody2D = GetComponent<Rigidbody2D>();
             groundCheck = transform.Find("GroundCheck");
-            anim = GetComponent<Animator>();
+            state = new PlayerState(GetComponent<Animator>());
         }
 
         void FixedUpdate()
         {
-            isGrounded = false;
+            bool isGrounded = false;
 
             var colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius, whatIsGround);
             for (int i = 0; i < colliders.Length; i++)
@@ -39,40 +54,91 @@ namespace GravityAdventure
                     isGrounded = true;
             }
 
-            anim.SetBool("Ground", isGrounded);
-            anim.SetFloat("vSpeed", _rigidbody2D.velocity.y);
+            state.UpdateGrounded(isGrounded);
+            state.UpdateVSpeed(_rigidbody2D.velocity.y);
         }
 
-        public void Move(float move, bool jump)
+        public void Move(float move, float climb)
         {
-            if (isGrounded || airControl)
+            UpdateStateChange();
+            var currentState = state.current;
+            switch (currentState)
             {
-                var velocity = move * maxSpeed;
-
-                if (!isGrounded && airControl)
+                case PlayerStateEnum.Grounded:
                 {
-                    velocity = Mathf.Lerp(_rigidbody2D.velocity.x, velocity, airControlDegree);
+                    MoveInternal(new Vector2(move * maxSpeed, _rigidbody2D.velocity.y));
+                    break;
                 }
-
-                _rigidbody2D.velocity = new Vector2(velocity, _rigidbody2D.velocity.y);
-
-                anim.SetFloat("Speed", Mathf.Abs(move));
-
-                if (move > 0 && !facingRight)
+                case PlayerStateEnum.Falling:
                 {
-                    Flip();
+                    var velocity = move * maxSpeed;
+                    
+                    if (airControl)
+                    {
+                        velocity = Mathf.Lerp(_rigidbody2D.velocity.x, velocity, airControlDegree);
+                    }
+
+                    MoveInternal(new Vector2(velocity, _rigidbody2D.velocity.y));
+                    break;
                 }
-                else if (move < 0 && facingRight)
+                case PlayerStateEnum.Climbing:
                 {
-                    Flip();
+                    var climbPosition = state.GetClimbPosition();
+                    
+                    if (Mathf.Abs(transform.position.x - climbPosition.x) < 0.1f)
+                    {
+                        _rigidbody2D.velocity = new Vector2(0.0f, climb * maxSpeed);
+                    }
+                    else if (state.CheckIf(PlayerStateEnum.Grounded))
+                    {
+                        state.UpdateHSpeed(maxSpeed);
+                        MoveInternal(new Vector2(maxSpeed * Mathf.Sign((climbPosition - transform.position).x), _rigidbody2D.velocity.y));
+                    }
+                    break;
+                }
+                case PlayerStateEnum.Jumping:
+                case PlayerStateEnum.DoubleJumping:
+                {
+                    state.UpdateGrounded(false);
+                    _rigidbody2D.AddForce(new Vector2(0f, jumpForce));
+                    break;
+                }
+                case PlayerStateEnum.Undefined:
+                {
+                    Debug.LogError("Undefined player state.");
+                    break;
                 }
             }
+        }
 
-            if (jump && isGrounded && anim.GetBool("Ground"))
+        private void UpdateStateChange()
+        {
+            switch (state.subState)
             {
-                isGrounded = false;
-                anim.SetBool("Ground", false);
-                _rigidbody2D.AddForce(new Vector2(0f, jumpForce));
+                case PlayerSubStates.StartClimbing:
+                {
+                    _rigidbody2D.gravityScale = 0.0f;
+                    break;
+                }
+                case PlayerSubStates.StopClimbing:
+                {
+                    _rigidbody2D.gravityScale = 1.0f;
+                    break;
+                }
+            }
+        }
+
+        void MoveInternal(Vector2 velocity)
+        {
+            _rigidbody2D.velocity = velocity;
+
+            if (velocity.x > 0 && !facingRight)
+            {
+                Flip();
+            }
+            else if (velocity.x < 0 && facingRight)
+            {
+                Flip();
             }
         }
 

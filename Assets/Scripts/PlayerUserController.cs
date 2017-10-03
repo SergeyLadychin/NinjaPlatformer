@@ -7,28 +7,29 @@ public class PlayerUserController : MonoBehaviour
 {
     private PlayerCharacterController controller;
     private bool jump;
+    private bool climbing;
 
-    // Use this for initialization
     void Awake ()
 	{
 	    controller = GetComponent<PlayerCharacterController>();
 	}
-	
-	// Update is called once per frame
+
 	void Update ()
     {
-        if (!jump)
-        {
-            jump = Input.GetButtonDown("Jump");
-        }
+        controller.state.UpdateJumping(Input.GetButtonDown("Jump"));
     }
 
     void FixedUpdate()
     {
         var h = Input.GetAxis("Horizontal");
+        var v = Input.GetAxis("Vertical");
 
-        controller.Move(h, jump);
+        controller.state.UpdateHSpeed(Mathf.Abs(h));
+        controller.state.UpdateClimbing(v);
 
-        jump = false;
+        //controller.Move(MoveHelper.ReverseClamp01(h), MoveHelper.ReverseClamp01(v));
+        controller.Move(h, v);
+
+        controller.state.UpdateJumping(false);
     }
 }
