@@ -9,15 +9,13 @@ public class PlayerCharacterController : MonoBehaviour
     public bool airControl = true;
     [Range(0f, 1f)]
     public float airControlDegree = 1f;
-
-    private PlayerState state;
+    
     private Rigidbody2D _rigidbody2D;
     private bool facingRight = true;
 
     void Awake()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
-        state = GetComponent<PlayerState>();
     }
 
     public void Move(float move)
@@ -60,6 +58,11 @@ public class PlayerCharacterController : MonoBehaviour
     public void TurnOnGravity()
     {
         _rigidbody2D.gravityScale = 1.0f;
+    }
+
+    public Vector2 GetVelocity()
+    {
+        return _rigidbody2D.velocity;
     }
 
     void MoveInternal(Vector2 velocity)

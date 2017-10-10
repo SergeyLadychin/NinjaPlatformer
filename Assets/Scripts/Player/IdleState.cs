@@ -2,23 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IdleState : IState
+public class IdleState : AbstractState
 {
-    private PlayerCharacterController controller;
+    public override StateType Type { get { return StateType.Idle; } }
 
-    public StateType Type { get { return StateType.Idle; } }
+    public IdleState(PlayerCharacterController characterController) : base(characterController) { }
 
-    public IdleState(PlayerCharacterController characterController)
-    {
-        controller = characterController;
-    }
-
-    public void Enter()
-    {
-        
-    }
-
-    public bool TryMakeTransition(StateInput input, out StateType newState)
+    public override bool TryMakeTransition(StateInput input, out StateType newState)
     {
         newState = Type;
         if (Mathf.Abs(input.horizontal) > Constants.axisThreshold)
@@ -29,13 +19,8 @@ public class IdleState : IState
         return false;
     }
 
-    public void Update()
+    public override void Update(StateInput input)
     {
         
-    }
-
-    public void Exit()
-    {
-
     }
 }

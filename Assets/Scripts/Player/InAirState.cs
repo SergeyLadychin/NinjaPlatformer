@@ -2,27 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InAirState : IState
+public class InAirState : AbstractState
 {
-    private PlayerCharacterController controller;
+    public override StateType Type { get { return StateType.FreeFall; } }
 
-    public StateType Type { get { return StateType.FreeFall; } }
+    public InAirState(PlayerCharacterController characterController) : base(characterController) { }
 
-    public InAirState(PlayerCharacterController characterController)
-    {
-        controller = characterController;
-    }
-
-    public void Enter()
-    {
-
-    }
-
-    public bool TryMakeTransition(StateInput input, out StateType newState)
+    public override bool TryMakeTransition(StateInput input, out StateType newState)
     {
         newState = Type;
 
-        if (input.grounded)
+        if (Mathf.Abs(controller.GetVelocity().y) > 0.0f)
+        {
+            return true;
+        }
+
+        if (input.grounded && isCurrent)
         {
             newState = StateType.Idle;
             return true;
@@ -31,15 +26,8 @@ public class InAirState : IState
         return false;
     }
 
-    public void Update()
+    public override void Update(StateInput input)
     {
-        var h = Input.GetAxis("Horizontal");
-
-        controller.AirControl(h);
-    }
-
-    public void Exit()
-    {
-
+        controller.AirControl(input.horizontal);
     }
 }

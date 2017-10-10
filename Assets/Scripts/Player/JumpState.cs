@@ -2,43 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JumpState : IState
+public class JumpState : AbstractState
 {
-    private PlayerCharacterController controller;
+    public override StateType Type { get { return StateType.Jump; } }
 
-    public StateType Type { get { return StateType.Jump; } }
+    public JumpState(PlayerCharacterController characterController) : base(characterController) { }
 
-    public JumpState(PlayerCharacterController characterController)
+    public override bool TryMakeTransition(StateInput input, out StateType newState)
     {
-        controller = characterController;
-    }
+        newState = Type;
 
-    public void Enter()
-    {
-
-    }
-
-    public bool TryMakeTransition(StateInput input, out StateType newState)
-    {
-        if (input.grounded && input.jump)
+        if (input.grounded && input.jump && !isCurrent)
         {
-            newState = StateType.Jump;
             return true;
         }
 
-        //always transit to fall state
-        //do not stay in that state more then one frame
-        newState = StateType.FreeFall;
-        return true;
+        return false;
     }
 
-    public void Update()
+    public override void Update(StateInput input)
     {
         controller.Jump();
-    }
-
-    public void Exit()
-    {
-
     }
 }

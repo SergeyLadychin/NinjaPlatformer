@@ -8,6 +8,6 @@ public interface IState
 
     void Enter();
     bool TryMakeTransition(StateInput input, out StateType newState);
-    void Update();
+    void Update(StateInput input);
     void Exit();
 }

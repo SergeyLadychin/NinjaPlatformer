@@ -13,6 +13,7 @@ public class PlayerState : MonoBehaviour
 
     private Transform groundCheck;
     private Transform climbCheck;
+    private Transform headCheck;
     private Animator animator;
     private Rigidbody2D _rigidbody2D;
 
@@ -43,27 +44,43 @@ public class PlayerState : MonoBehaviour
         allStates.Add(StateType.PrepareToClimb, new PrepareToClimbState(characterController));
         allStates.Add(StateType.Climb, new ClimbState(characterController));
 
+        if (allowDoubleJump)
+        {
+            allStates.Add(StateType.DoubleJump, new DoubleJumpState(characterController));
+        }
+
         statesHierarchy = new List<IState>();
         statesHierarchy.Add(allStates[StateType.Climb]);
         statesHierarchy.Add(allStates[StateType.Jump]);
+        if (allowDoubleJump)
+        {
+            statesHierarchy.Add(allStates[StateType.DoubleJump]);
+        }
         statesHierarchy.Add(allStates[StateType.FreeFall]);
         statesHierarchy.Add(allStates[StateType.Idle]);
 
         animator = GetComponent<Animator>();
         groundCheck = transform.Find("GroundCheck");
         climbCheck = transform.Find("ClimbCheck");
+        headCheck = transform.Find("HeadCheck");
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-        stateInput.jump = Input.GetButtonDown("Jump");
-        stateInput.horizontal = Input.GetAxis("Horizontal");
-        stateInput.vertical = Input.GetAxis("Vertical");
+        //Check if flag was dropped instead of just setting field 'jump' every Update call,
+        //because Update can be called several times before FixedUpdate will be called.
+        if (!stateInput.jump)
+        {
+            stateInput.jump = Input.GetButtonDown("Jump");
+        }
     }
 
     void FixedUpdate()
     {
+        stateInput.horizontal = Input.GetAxis("Horizontal");
+        stateInput.vertical = Input.GetAxis("Vertical");
+
         bool isGrounded = false;
 
         var colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius, whatIsGround);
@@ -90,7 +107,21 @@ public class PlayerState : MonoBehaviour
             }
         }
 
+        bool climbTopReached = false;
+        if (inClimbArea)
+        {
+            colliders = Physics2D.OverlapCircleAll(headCheck.position, groundCheckRadius);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i].gameObject.name == "LadderTop")
+                {
+                    climbTopReached = true;
+                }
+            }
+        }
+
         stateInput.inClimbArea = inClimbArea;
+        stateInput.climbTopReached = climbTopReached;
         stateInput.climbPosition = whereCanClimb;
 
         animator.SetFloat("hSpeed", Mathf.Abs(_rigidbody2D.velocity.x));
@@ -107,6 +138,9 @@ public class PlayerState : MonoBehaviour
             StateType nextState;
             if (statesHierarchy[i].TryMakeTransition(stateInput, out nextState))
             {
+                if (nextState == currentState.Type)
+                    break;
+
                 IState state;
                 if (allStates.TryGetValue(nextState, out state))
                 {
@@ -121,7 +155,8 @@ public class PlayerState : MonoBehaviour
                 }
             }
         }
-        currentState.Update();
+        //Debug.Log(string.Format("Current state {0}", currentState.Type));
+        currentState.Update(stateInput);
     }
 }
 
@@ -132,7 +167,7 @@ public enum StateType
     Idle,
     Run,
     Jump,
-    DoubleJumping,
+    DoubleJump,
     FreeFall,
     PrepareToClimb,
     Climb

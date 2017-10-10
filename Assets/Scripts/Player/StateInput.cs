@@ -6,6 +6,7 @@ public class StateInput
 {
     public bool grounded;
     public bool inClimbArea;
+    public bool climbTopReached;
     public float horizontal;
     public float vertical;
     public bool jump;

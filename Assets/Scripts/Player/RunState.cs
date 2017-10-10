@@ -2,23 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RunState : IState
+public class RunState : AbstractState
 {
-    private PlayerCharacterController controller;
+    public override StateType Type { get { return StateType.Run; } }
 
-    public StateType Type { get { return StateType.Run; } }
+    public RunState(PlayerCharacterController characterController) : base(characterController) { }
 
-    public RunState(PlayerCharacterController characterController)
-    {
-        controller = characterController;
-    }
-
-    public void Enter()
-    {
-
-    }
-
-    public bool TryMakeTransition(StateInput input, out StateType newState)
+    public override bool TryMakeTransition(StateInput input, out StateType newState)
     {
         newState = Type;
 
@@ -31,15 +21,8 @@ public class RunState : IState
         return false;
     }
      
-    public void Update()
+    public override void Update(StateInput input)
     {
-        var h = Input.GetAxis("Horizontal");
-
-        controller.Move(h);
-    }
-
-    public void Exit()
-    {
-
+        controller.Move(input.horizontal);
     }
 }
