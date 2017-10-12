@@ -6,7 +6,8 @@ public class InAirState : AbstractState
 {
     public override StateType Type { get { return StateType.FreeFall; } }
 
-    public InAirState(PlayerCharacterController characterController) : base(characterController) { }
+    public InAirState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider)
+        : base(characterController, stateInputProvider) { }
 
     public override bool TryMakeTransition(StateInput input, out StateType newState)
     {
@@ -26,8 +27,8 @@ public class InAirState : AbstractState
         return false;
     }
 
-    public override void Update(StateInput input)
+    public override void Update()
     {
-        controller.AirControl(input.horizontal);
+        controller.AirControl(inputProvider.Get().horizontal);
     }
 }

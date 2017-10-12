@@ -6,7 +6,8 @@ public class IdleState : AbstractState
 {
     public override StateType Type { get { return StateType.Idle; } }
 
-    public IdleState(PlayerCharacterController characterController) : base(characterController) { }
+    public IdleState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider) 
+        : base(characterController, stateInputProvider) { }
 
     public override bool TryMakeTransition(StateInput input, out StateType newState)
     {
@@ -19,7 +20,7 @@ public class IdleState : AbstractState
         return false;
     }
 
-    public override void Update(StateInput input)
+    public override void Update()
     {
         
     }

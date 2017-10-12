@@ -6,11 +6,13 @@ public class ClimbState : AbstractState
 {
     public override StateType Type { get { return StateType.Climb; } }
 
-    public ClimbState(PlayerCharacterController characterController) : base(characterController) { }
+    public ClimbState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider)
+        : base(characterController, stateInputProvider) { }
 
     public override void Enter()
     {
         base.Enter();
+        controller.SetRigidbodyPositionX(inputProvider.Get().climbPosition.x);
         controller.TurnOffGravity();
     }
 
@@ -26,7 +28,7 @@ public class ClimbState : AbstractState
             }
             if (input.jump || Mathf.Abs(input.horizontal) > Constants.axisThreshold)
             {
-                newState = StateType.FreeFall;
+                newState = StateType.ClimbJumpOff;
                 return true;
             }
             return true;
@@ -64,8 +66,9 @@ public class ClimbState : AbstractState
         return false;
     }
 
-    public override void Update(StateInput input)
+    public override void Update()
     {
+        var input = inputProvider.Get();
         if (input.climbTopReached && input.vertical > Constants.axisThreshold)
         {
             controller.Climb(0.0f);

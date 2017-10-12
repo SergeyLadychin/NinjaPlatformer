@@ -8,7 +8,8 @@ public class DoubleJumpState : AbstractState
 
     public override StateType Type { get { return StateType.DoubleJump; } }
 
-    public DoubleJumpState(PlayerCharacterController characterController) : base(characterController) { }
+    public DoubleJumpState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider) 
+        : base(characterController, stateInputProvider) { }
 
     public override bool TryMakeTransition(StateInput input, out StateType newState)
     {
@@ -19,8 +20,10 @@ public class DoubleJumpState : AbstractState
             canDoubleJump = true;
         }
 
+        //First check if player is in the air
         if (!input.grounded && Mathf.Abs(controller.GetVelocity().y) > 0.0f && !isCurrent)
         {
+            //then check if player can jump
             if (input.jump && canDoubleJump)
             {
                 canDoubleJump = false;
@@ -31,7 +34,7 @@ public class DoubleJumpState : AbstractState
         return false;
     }
 
-    public override void Update(StateInput input)
+    public override void Update()
     {
         controller.Jump();
     }

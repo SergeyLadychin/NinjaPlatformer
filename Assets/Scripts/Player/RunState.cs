@@ -6,7 +6,8 @@ public class RunState : AbstractState
 {
     public override StateType Type { get { return StateType.Run; } }
 
-    public RunState(PlayerCharacterController characterController) : base(characterController) { }
+    public RunState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider)
+        : base(characterController, stateInputProvider) { }
 
     public override bool TryMakeTransition(StateInput input, out StateType newState)
     {
@@ -21,8 +22,8 @@ public class RunState : AbstractState
         return false;
     }
      
-    public override void Update(StateInput input)
+    public override void Update()
     {
-        controller.Move(input.horizontal);
+        controller.Move(inputProvider.Get().horizontal);
     }
 }

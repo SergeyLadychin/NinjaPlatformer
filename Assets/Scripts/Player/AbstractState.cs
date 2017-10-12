@@ -5,13 +5,15 @@ using UnityEngine;
 public abstract class AbstractState : IState
 {
     protected PlayerCharacterController controller;
+    protected IStateInputProvider inputProvider;
     protected bool isCurrent;
 
     public abstract StateType Type { get; }
 
-    public AbstractState(PlayerCharacterController characterController)
+    public AbstractState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider)
     {
         controller = characterController;
+        inputProvider = stateInputProvider;
     }
 
     public virtual void Enter()
@@ -21,7 +23,7 @@ public abstract class AbstractState : IState
 
     public abstract bool TryMakeTransition(StateInput input, out StateType newState);
 
-    public abstract void Update(StateInput input);
+    public abstract void Update();
 
     public virtual void Exit()
     {

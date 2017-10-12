@@ -8,8 +8,6 @@ public class PlayerState : MonoBehaviour
     private StateInput stateInput;
 
     private const float groundCheckRadius = 0.1f;
-    private const float axisThreshold = 0.001f;
-    private const float velocityThreshold = 0.01f;
 
     private Transform groundCheck;
     private Transform climbCheck;
@@ -19,7 +17,7 @@ public class PlayerState : MonoBehaviour
 
     public bool allowDoubleJump;
     public LayerMask whatIsGround;
-    public LayerMask whatIsLadder;
+    public LayerMask whatIsClimbArea;
     public float climbCheckRadius = 5.0f;
 
     private IState currentState
@@ -35,18 +33,21 @@ public class PlayerState : MonoBehaviour
     {
         stateInput = new StateInput();
         var characterController = GetComponent<PlayerCharacterController>();
+        var stateInputProvider = new StateInputProvider();
+        stateInputProvider.Set(stateInput);
 
         allStates = new Dictionary<StateType, IState>();
-        allStates.Add(StateType.Idle, new IdleState(characterController));
-        allStates.Add(StateType.Run, new RunState(characterController));
-        allStates.Add(StateType.Jump, new JumpState(characterController));
-        allStates.Add(StateType.FreeFall, new InAirState(characterController));
-        allStates.Add(StateType.PrepareToClimb, new PrepareToClimbState(characterController));
-        allStates.Add(StateType.Climb, new ClimbState(characterController));
+        allStates.Add(StateType.Idle, new IdleState(characterController, stateInputProvider));
+        allStates.Add(StateType.Run, new RunState(characterController, stateInputProvider));
+        allStates.Add(StateType.Jump, new JumpState(characterController, stateInputProvider));
+        allStates.Add(StateType.FreeFall, new InAirState(characterController, stateInputProvider));
+        allStates.Add(StateType.PrepareToClimb, new PrepareToClimbState(characterController, stateInputProvider));
+        allStates.Add(StateType.ClimbJumpOff, new ClimbJumpOffState(characterController, stateInputProvider));
+        allStates.Add(StateType.Climb, new ClimbState(characterController, stateInputProvider));
 
         if (allowDoubleJump)
         {
-            allStates.Add(StateType.DoubleJump, new DoubleJumpState(characterController));
+            allStates.Add(StateType.DoubleJump, new DoubleJumpState(characterController, stateInputProvider));
         }
 
         statesHierarchy = new List<IState>();
@@ -97,7 +98,7 @@ public class PlayerState : MonoBehaviour
 
         bool inClimbArea = false;
         Vector3 whereCanClimb = Vector3.zero;
-        colliders = Physics2D.OverlapCircleAll(climbCheck.position, climbCheckRadius, whatIsLadder);
+        colliders = Physics2D.OverlapCircleAll(climbCheck.position, climbCheckRadius, whatIsClimbArea);
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
@@ -156,7 +157,7 @@ public class PlayerState : MonoBehaviour
             }
         }
         //Debug.Log(string.Format("Current state {0}", currentState.Type));
-        currentState.Update(stateInput);
+        currentState.Update();
     }
 }
 
@@ -170,5 +171,6 @@ public enum StateType
     DoubleJump,
     FreeFall,
     PrepareToClimb,
+    ClimbJumpOff,
     Climb
 }

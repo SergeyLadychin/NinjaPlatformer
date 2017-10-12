@@ -20,7 +20,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     public void Move(float move)
     {
-        MoveInternal(new Vector2(move * maxSpeed, _rigidbody2D.velocity.y));
+        MoveInternal(new Vector2(move * maxSpeed, _rigidbody2D.velocity.y), move);
     }
 
     public void AirControl(float move)
@@ -32,7 +32,7 @@ public class PlayerCharacterController : MonoBehaviour
             velocity = Mathf.Lerp(_rigidbody2D.velocity.x, velocity, airControlDegree);
         }
 
-        MoveInternal(new Vector2(velocity, _rigidbody2D.velocity.y));
+        MoveInternal(new Vector2(velocity, _rigidbody2D.velocity.y), move);
     }
 
     public void Climb(float climb)
@@ -45,9 +45,17 @@ public class PlayerCharacterController : MonoBehaviour
         return Mathf.Abs(transform.position.x - climbPosition.x) < 0.1f;
     }
 
+    public void SetRigidbodyPositionX(float x)
+    {
+        var rPosition = _rigidbody2D.position;
+        rPosition.x = x;
+        _rigidbody2D.position = rPosition;
+    }
+
     public void Jump()
     {
-        _rigidbody2D.AddForce(new Vector2(0f, jumpForce));
+        _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 0.0f);
+        _rigidbody2D.AddForce(Vector2.up * jumpForce);
     }
 
     public void TurnOffGravity()
@@ -65,15 +73,15 @@ public class PlayerCharacterController : MonoBehaviour
         return _rigidbody2D.velocity;
     }
 
-    void MoveInternal(Vector2 velocity)
+    void MoveInternal(Vector2 velocity, float facing)
     {
         _rigidbody2D.velocity = velocity;
 
-        if (velocity.x > 0 && !facingRight)
+        if (facing > 0 && !facingRight)
         {
             Flip();
         }
-        else if (velocity.x < 0 && facingRight)
+        else if (facing < 0 && facingRight)
         {
             Flip();
         }
