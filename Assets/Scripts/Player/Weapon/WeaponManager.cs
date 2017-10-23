@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngineInternal;
 
 public class WeaponManager : MonoBehaviour
 {
     private const int defaultGroupIndex = 0;
     private int activeGroupIndex = 0;
+    private float cooldown = -1.0f;
 
     public WeaponGroup[] weaponGroups;
 
@@ -30,26 +30,37 @@ public class WeaponManager : MonoBehaviour
 	{
         UpdateActive();
 
+        //Update input
 	    var activeGroup = GetActiveGroup();
         activeGroup.UpdateInput();
+
+        //Update cooldown
+        if (cooldown > 0.0f)
+        {
+            cooldown -= Time.deltaTime;
+        }
 	}
 
     public bool CheckUserInput()
     {
-        var activeGroup = GetActiveGroup();
-        return activeGroup.CheckUserInput();
+        if (cooldown < 0.0f)
+        {
+            var activeGroup = GetActiveGroup();
+            return activeGroup.CheckUserInput();
+        }
+        return false;
     }
 
-    public float Fire()
+    public void Fire()
     {
         var activeGroup = GetActiveGroup();
-        var cooldown = activeGroup.Fire();
-        if (cooldown > 0.0f && activeGroup.deactivateOnFire)
+        var weaponCooldown = activeGroup.Fire();
+        if (weaponCooldown > 0.0f && activeGroup.deactivateOnFire)
         {
             activeGroup.Deactive();
             activeGroupIndex = defaultGroupIndex;
         }
-        return cooldown;
+        cooldown = weaponCooldown;
     }
 
     private void UpdateActive()
@@ -68,6 +79,7 @@ public class WeaponManager : MonoBehaviour
                 break;
             }
         }
+
         if (prevActiveGroupIndex != activeGroupIndex)
         {
             weaponGroups[prevActiveGroupIndex].Deactive();

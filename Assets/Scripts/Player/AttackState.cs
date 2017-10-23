@@ -5,7 +5,6 @@ using UnityEngine;
 public class AttackState : AbstractState
 {
     private WeaponManager weaponManager;
-    private float cooldown = -1.0f;
 
     public override StateType Type { get { return StateType.Attack; } }
 
@@ -18,22 +17,17 @@ public class AttackState : AbstractState
     public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         newState = Type;
-        
-        if (cooldown < 0.0f)
+
+        if ((current == StateType.Idle || current == StateType.Run || current == StateType.FreeFall) && weaponManager.CheckUserInput())
         {
-            if ((current == StateType.Idle || current == StateType.Run || current == StateType.FreeFall) && weaponManager.CheckUserInput())
-                return true;
+            return true;
         }
-        else
-        {
-            cooldown -= Time.fixedDeltaTime;
-        }
-        
+
         return false;
     }
 
     public override void Update()
     {
-        cooldown = weaponManager.Fire();
+        weaponManager.Fire();
     }
 }
