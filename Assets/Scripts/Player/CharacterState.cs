@@ -78,11 +78,6 @@ public class CharacterState : MonoBehaviour
         {
             stateInput.jump = Input.GetButtonDown("Jump");
         }
-
-        if (Input.GetButtonDown(Constants.ThrowBombButton))
-        {
-            characterController.ToggleBombLauncherActiveState();
-        }
     }
 
     void FixedUpdate()

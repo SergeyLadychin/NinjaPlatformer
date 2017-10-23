@@ -18,6 +18,12 @@ public class AttackState : AbstractState
     {
         newState = Type;
 
+        if (isCurrent)
+        {
+            newState = StateType.Idle;
+            return true;
+        }
+
         if ((current == StateType.Idle || current == StateType.Run || current == StateType.FreeFall) && weaponManager.CheckUserInput())
         {
             return true;

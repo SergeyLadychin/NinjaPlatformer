@@ -73,7 +73,7 @@ public class BombLauncherController : Weapon
             lineRenderer.SetPosition(i, GetHermiteCurveInterpolation(curvePoints, tangent, fraction));
             fraction += segmentLength;
         }
-        lineRenderer.SetPosition(segmentCount, GetHermiteCurveInterpolation(curvePoints, tangent, fraction));
+        lineRenderer.SetPosition(segmentCount, GetHermiteCurveInterpolation(curvePoints, tangent, 1.0f));
     }
 
     Vector3 GetBezierCurveInterpolation(Vector3[] controlPoints, float u)

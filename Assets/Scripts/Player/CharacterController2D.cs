@@ -10,14 +10,12 @@ public class CharacterController2D : MonoBehaviour
     [Range(0.0f, 1.0f)]
     public float airControlDegree = 1.0f;
 
-    private Transform bombLauncher;
     private Rigidbody2D _rigidbody2D;
     private bool facingRight = true;
 
     void Awake()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
-        bombLauncher = transform.Find("BombLauncher");
     }
 
     public void Move(float move)
@@ -71,11 +69,6 @@ public class CharacterController2D : MonoBehaviour
     public Vector2 GetVelocity()
     {
         return _rigidbody2D.velocity;
-    }
-
-    public void ToggleBombLauncherActiveState()
-    {
-        bombLauncher.gameObject.SetActive(!bombLauncher.gameObject.activeSelf);
     }
 
     public Vector3 GetFacingDirection()
