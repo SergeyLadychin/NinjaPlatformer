@@ -2,20 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCharacterController : MonoBehaviour
+public class CharacterController2D : MonoBehaviour
 {
-    public float maxSpeed = 7f;
-    public float jumpForce = 100f;
+    public float maxSpeed = 7.0f;
+    public float jumpForce = 100.0f;
     public bool airControl = true;
-    [Range(0f, 1f)]
-    public float airControlDegree = 1f;
-    
+    [Range(0.0f, 1.0f)]
+    public float airControlDegree = 1.0f;
+
+    private Transform bombLauncher;
     private Rigidbody2D _rigidbody2D;
     private bool facingRight = true;
 
     void Awake()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
+        bombLauncher = transform.Find("BombLauncher");
     }
 
     public void Move(float move)
@@ -45,11 +47,9 @@ public class PlayerCharacterController : MonoBehaviour
         return Mathf.Abs(transform.position.x - climbPosition.x) < 0.1f;
     }
 
-    public void SetRigidbodyPositionX(float x)
+    public void SetRigidbodyPosition(Vector3 position)
     {
-        var rPosition = _rigidbody2D.position;
-        rPosition.x = x;
-        _rigidbody2D.position = rPosition;
+        _rigidbody2D.position = position;
     }
 
     public void Jump()
@@ -71,6 +71,16 @@ public class PlayerCharacterController : MonoBehaviour
     public Vector2 GetVelocity()
     {
         return _rigidbody2D.velocity;
+    }
+
+    public void ToggleBombLauncherActiveState()
+    {
+        bombLauncher.gameObject.SetActive(!bombLauncher.gameObject.activeSelf);
+    }
+
+    public Vector3 GetFacingDirection()
+    {
+        return facingRight ? Vector3.right : Vector3.left;
     }
 
     void MoveInternal(Vector2 velocity, float facing)

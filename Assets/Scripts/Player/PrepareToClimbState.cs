@@ -6,10 +6,10 @@ public class PrepareToClimbState : AbstractState
 {
     public override StateType Type { get { return StateType.PrepareToClimb; } }
 
-    public PrepareToClimbState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider)
+    public PrepareToClimbState(CharacterController2D characterController, IStateInputProvider stateInputProvider)
         : base(characterController, stateInputProvider) { }
 
-    public override bool TryMakeTransition(StateInput input, out StateType newState)
+    public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         //Transitions like PrepareToClimb->Idle->PrepareToClimb->Idle->Climb won't be generated,
         //because Climb state first in hierarchy, so on each FixedUpdate transition to PrepareToClimb will be performed

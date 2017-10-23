@@ -6,12 +6,13 @@ public class JumpState : AbstractState
 {
     public override StateType Type { get { return StateType.Jump; } }
 
-    public JumpState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider)
+    public JumpState(CharacterController2D characterController, IStateInputProvider stateInputProvider)
         : base(characterController, stateInputProvider) { }
 
-    public override bool TryMakeTransition(StateInput input, out StateType newState)
+    public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         newState = Type;
+        var input = inputProvider.Get();
 
         if (input.grounded && input.jump && !isCurrent)
         {

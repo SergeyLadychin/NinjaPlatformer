@@ -6,10 +6,10 @@ public class ClimbJumpOffState : AbstractState
 {
     public override StateType Type { get { return StateType.ClimbJumpOff; } }
 
-    public ClimbJumpOffState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider) 
+    public ClimbJumpOffState(CharacterController2D characterController, IStateInputProvider stateInputProvider) 
         : base(characterController, stateInputProvider) { }
 
-    public override bool TryMakeTransition(StateInput input, out StateType newState)
+    public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         newState = Type;
 

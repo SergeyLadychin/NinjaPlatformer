@@ -4,13 +4,13 @@ using UnityEngine;
 
 public abstract class AbstractState : IState
 {
-    protected PlayerCharacterController controller;
+    protected CharacterController2D controller;
     protected IStateInputProvider inputProvider;
     protected bool isCurrent;
 
     public abstract StateType Type { get; }
 
-    public AbstractState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider)
+    public AbstractState(CharacterController2D characterController, IStateInputProvider stateInputProvider)
     {
         controller = characterController;
         inputProvider = stateInputProvider;
@@ -21,7 +21,7 @@ public abstract class AbstractState : IState
         isCurrent = true;
     }
 
-    public abstract bool TryMakeTransition(StateInput input, out StateType newState);
+    public abstract bool TryMakeTransition(StateType current, out StateType newState);
 
     public abstract void Update();
 

@@ -6,12 +6,14 @@ public class IdleState : AbstractState
 {
     public override StateType Type { get { return StateType.Idle; } }
 
-    public IdleState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider) 
+    public IdleState(CharacterController2D characterController, IStateInputProvider stateInputProvider) 
         : base(characterController, stateInputProvider) { }
 
-    public override bool TryMakeTransition(StateInput input, out StateType newState)
+    public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         newState = Type;
+        var input = inputProvider.Get();
+
         if (Mathf.Abs(input.horizontal) > Constants.axisThreshold)
         {
             newState = StateType.Run;

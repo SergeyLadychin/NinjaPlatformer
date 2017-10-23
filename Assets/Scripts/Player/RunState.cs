@@ -6,12 +6,13 @@ public class RunState : AbstractState
 {
     public override StateType Type { get { return StateType.Run; } }
 
-    public RunState(PlayerCharacterController characterController, IStateInputProvider stateInputProvider)
+    public RunState(CharacterController2D characterController, IStateInputProvider stateInputProvider)
         : base(characterController, stateInputProvider) { }
 
-    public override bool TryMakeTransition(StateInput input, out StateType newState)
+    public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         newState = Type;
+        var input = inputProvider.Get();
 
         if (Mathf.Abs(input.horizontal) < Constants.axisThreshold)
         {

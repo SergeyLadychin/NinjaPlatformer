@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState : MonoBehaviour
+public class CharacterState : MonoBehaviour
 {
     private StateInput stateInput;
 
@@ -14,6 +14,7 @@ public class PlayerState : MonoBehaviour
     private Transform headCheck;
     private Animator animator;
     private Rigidbody2D _rigidbody2D;
+    private CharacterController2D characterController;
 
     public bool allowDoubleJump;
     public LayerMask whatIsGround;
@@ -32,7 +33,7 @@ public class PlayerState : MonoBehaviour
     void Awake()
     {
         stateInput = new StateInput();
-        var characterController = GetComponent<PlayerCharacterController>();
+        characterController = GetComponent<CharacterController2D>();
         var stateInputProvider = new StateInputProvider();
         stateInputProvider.Set(stateInput);
 
@@ -44,6 +45,7 @@ public class PlayerState : MonoBehaviour
         allStates.Add(StateType.PrepareToClimb, new PrepareToClimbState(characterController, stateInputProvider));
         allStates.Add(StateType.ClimbJumpOff, new ClimbJumpOffState(characterController, stateInputProvider));
         allStates.Add(StateType.Climb, new ClimbState(characterController, stateInputProvider));
+        allStates.Add(StateType.Attack, new AttackState(characterController, stateInputProvider, GetComponent<WeaponManager>()));
 
         if (allowDoubleJump)
         {
@@ -51,6 +53,7 @@ public class PlayerState : MonoBehaviour
         }
 
         statesHierarchy = new List<IState>();
+        statesHierarchy.Add(allStates[StateType.Attack]);
         statesHierarchy.Add(allStates[StateType.Climb]);
         statesHierarchy.Add(allStates[StateType.Jump]);
         if (allowDoubleJump)
@@ -74,6 +77,11 @@ public class PlayerState : MonoBehaviour
         if (!stateInput.jump)
         {
             stateInput.jump = Input.GetButtonDown("Jump");
+        }
+
+        if (Input.GetButtonDown(Constants.ThrowBombButton))
+        {
+            characterController.ToggleBombLauncherActiveState();
         }
     }
 
@@ -137,7 +145,7 @@ public class PlayerState : MonoBehaviour
         for (int i = 0; i < statesHierarchy.Count; i++)
         {
             StateType nextState;
-            if (statesHierarchy[i].TryMakeTransition(stateInput, out nextState))
+            if (statesHierarchy[i].TryMakeTransition(currentState.Type, out nextState))
             {
                 if (nextState == currentState.Type)
                     break;
@@ -172,5 +180,6 @@ public enum StateType
     FreeFall,
     PrepareToClimb,
     ClimbJumpOff,
-    Climb
+    Climb,
+    Attack
 }
