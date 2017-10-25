@@ -5,8 +5,8 @@ using UnityEngine;
 public class WeaponManager : MonoBehaviour
 {
     private const int defaultGroupIndex = 0;
-    private int activeGroupIndex = 0;
-    private float cooldown = -1.0f;
+    private int activeGroupIndex = defaultGroupIndex;
+    private bool canFire = true;
 
     public WeaponGroup[] weaponGroups;
 
@@ -14,6 +14,7 @@ public class WeaponManager : MonoBehaviour
 	{
 	    var characterController = GetComponent<CharacterController2D>();
 	    var characterAnimator = GetComponent<Animator>();
+	    var inputManager = GetComponent<IInputManager>();
 
 	    if (weaponGroups.Length == 0)
 	    {
@@ -22,7 +23,7 @@ public class WeaponManager : MonoBehaviour
 
 	    for (int i = 0; i < weaponGroups.Length; i++)
 	    {
-	        weaponGroups[i].Init(characterController, characterAnimator);
+	        weaponGroups[i].Init(characterController, characterAnimator, inputManager);
 	    }
 	}
 
@@ -33,17 +34,11 @@ public class WeaponManager : MonoBehaviour
         //Update input
 	    var activeGroup = GetActiveGroup();
         activeGroup.UpdateInput();
-
-        //Update cooldown
-        if (cooldown > 0.0f)
-        {
-            cooldown -= Time.deltaTime;
-        }
 	}
 
     public bool CheckUserInput()
     {
-        if (cooldown < 0.0f)
+        if (canFire)
         {
             var activeGroup = GetActiveGroup();
             return activeGroup.CheckUserInput();
@@ -51,16 +46,42 @@ public class WeaponManager : MonoBehaviour
         return false;
     }
 
+    public void ClearUserInput()
+    {
+        var activeGroup = GetActiveGroup();
+        activeGroup.ClearInput();
+    }
+
     public void Fire()
     {
         var activeGroup = GetActiveGroup();
         var weaponCooldown = activeGroup.Fire();
-        if (weaponCooldown > 0.0f && activeGroup.deactivateOnFire)
+        if (weaponCooldown > 0.0f)
         {
+            if (activeGroup.deactivateOnFire)
+            {
+                activeGroup.Deactive();
+                activeGroupIndex = defaultGroupIndex;
+            }
+            StartCoroutine("ProcessCooldown", weaponCooldown);
+        }
+    }
+
+    public void SetDefaultGroup()
+    {
+        if (activeGroupIndex != defaultGroupIndex)
+        {
+            var activeGroup = GetActiveGroup();
             activeGroup.Deactive();
             activeGroupIndex = defaultGroupIndex;
         }
-        cooldown = weaponCooldown;
+    }
+
+    private IEnumerator ProcessCooldown(float cooldownTime)
+    {
+        canFire = false;
+        yield return new WaitForSeconds(cooldownTime);
+        canFire = true;
     }
 
     private void UpdateActive()

@@ -10,6 +10,19 @@ public class StateInput
     public float horizontal;
     public float vertical;
     public bool jump;
+    public bool stopMoving;
 
     public Vector3 climbPosition;
+
+    public void Clear()
+    {
+        grounded = false;
+        inClimbArea = false;
+        climbTopReached = false;
+        horizontal = 0.0f;
+        vertical = 0.0f;
+        jump = false;
+        stopMoving = false;
+        climbPosition = Vector3.zero;
+    }
 }

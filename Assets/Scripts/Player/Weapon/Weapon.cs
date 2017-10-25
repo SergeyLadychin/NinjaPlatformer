@@ -4,14 +4,19 @@ using UnityEngine;
 
 public abstract class Weapon : MonoBehaviour
 {
-    public float cooldown;
     protected Animator animator;
     protected CharacterController2D controller;
 
-    public void Init(CharacterController2D characterController, Animator charcterAnimator)
+    public float cooldown;
+
+    [HideInInspector]
+    public IInputManager inputManager;
+
+    public void Init(CharacterController2D characterController, Animator charcterAnimator, IInputManager inputManager)
     {
         controller = characterController;
         animator = charcterAnimator;
+        this.inputManager = inputManager;
     }
 
     public virtual void Activate()

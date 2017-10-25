@@ -11,11 +11,11 @@ public class WeaponGroup
     public bool deactivateOnFire;
     public WeaponItem[] items;
 
-    public void Init(CharacterController2D characterController, Animator characterAnimator)
+    public void Init(CharacterController2D characterController, Animator characterAnimator, IInputManager inputManager)
     {
         for (int i = 0; i < items.Length; i++)
         {
-            items[i].weapon.Init(characterController, characterAnimator);
+            items[i].weapon.Init(characterController, characterAnimator, inputManager);
         }
     }
 
@@ -47,6 +47,14 @@ public class WeaponGroup
             }
         }
         return false;
+    }
+
+    public void ClearInput()
+    {
+        for (int i = 0; i < items.Length; i++)
+        {
+            items[i].ClearInput();
+        }
     }
 
     public float Fire()

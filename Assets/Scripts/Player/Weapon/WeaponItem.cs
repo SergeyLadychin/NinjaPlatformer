@@ -16,7 +16,7 @@ public class WeaponItem
     {
         if (!buttonPressed)
         {
-            buttonPressed = Input.GetButtonDown(fireButton);
+            buttonPressed = weapon.inputManager.GetButtonStatus(fireButton);
         }
     }
 

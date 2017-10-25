@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : Character
 {
-    public void TakeDamage()
+    public override void TakeDamage()
     {
-        
+
     }
 }

@@ -8,13 +8,13 @@ public class DoubleJumpState : AbstractState
 
     public override StateType Type { get { return StateType.DoubleJump; } }
 
-    public DoubleJumpState(CharacterController2D characterController, IStateInputProvider stateInputProvider) 
-        : base(characterController, stateInputProvider) { }
+    public DoubleJumpState(CharacterController2D characterController, IInputManager inputManager) 
+        : base(characterController, inputManager) { }
 
     public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         newState = Type;
-        var input = inputProvider.Get();
+        var input = inputManager.GetStateInput();
 
         if (input.grounded)
         {

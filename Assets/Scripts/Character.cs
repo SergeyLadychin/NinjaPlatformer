@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IStateInputProvider
+public abstract class Character : MonoBehaviour
 {
-    StateInput Get();
+    public abstract void TakeDamage();
 }

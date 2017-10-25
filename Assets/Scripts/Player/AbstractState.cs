@@ -5,15 +5,15 @@ using UnityEngine;
 public abstract class AbstractState : IState
 {
     protected CharacterController2D controller;
-    protected IStateInputProvider inputProvider;
+    protected IInputManager inputManager;
     protected bool isCurrent;
 
     public abstract StateType Type { get; }
 
-    public AbstractState(CharacterController2D characterController, IStateInputProvider stateInputProvider)
+    public AbstractState(CharacterController2D characterController, IInputManager inputManager)
     {
         controller = characterController;
-        inputProvider = stateInputProvider;
+        this.inputManager = inputManager;
     }
 
     public virtual void Enter()

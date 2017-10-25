@@ -6,8 +6,8 @@ public class PrepareToClimbState : AbstractState
 {
     public override StateType Type { get { return StateType.PrepareToClimb; } }
 
-    public PrepareToClimbState(CharacterController2D characterController, IStateInputProvider stateInputProvider)
-        : base(characterController, stateInputProvider) { }
+    public PrepareToClimbState(CharacterController2D characterController, IInputManager inputManager)
+        : base(characterController, inputManager) { }
 
     public override bool TryMakeTransition(StateType current, out StateType newState)
     {
@@ -21,7 +21,7 @@ public class PrepareToClimbState : AbstractState
 
     public override void Update()
     {
-        var input = inputProvider.Get();
+        var input = inputManager.GetStateInput();
         controller.Move(Mathf.Sign((input.climbPosition - controller.transform.position).x) * input.vertical);
     }
 }

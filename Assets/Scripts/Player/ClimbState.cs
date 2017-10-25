@@ -6,20 +6,20 @@ public class ClimbState : AbstractState
 {
     public override StateType Type { get { return StateType.Climb; } }
 
-    public ClimbState(CharacterController2D characterController, IStateInputProvider stateInputProvider)
-        : base(characterController, stateInputProvider) { }
+    public ClimbState(CharacterController2D characterController, IInputManager inputManager)
+        : base(characterController, inputManager) { }
 
     public override void Enter()
     {
         base.Enter();
-        controller.SetRigidbodyPosition(new Vector3(inputProvider.Get().climbPosition.x, controller.transform.position.y, controller.transform.position.z));
+        controller.SetRigidbodyPosition(new Vector3(inputManager.GetStateInput().climbPosition.x, controller.transform.position.y, controller.transform.position.z));
         controller.TurnOffGravity();
     }
 
     public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         newState = Type;
-        var input = inputProvider.Get();
+        var input = inputManager.GetStateInput();
         if (isCurrent)
         {
             if (input.grounded && input.vertical < -Constants.axisThreshold)
@@ -69,7 +69,7 @@ public class ClimbState : AbstractState
 
     public override void Update()
     {
-        var input = inputProvider.Get();
+        var input = inputManager.GetStateInput();
         if (input.climbTopReached && input.vertical > Constants.axisThreshold)
         {
             controller.Climb(0.0f);

@@ -8,8 +8,8 @@ public class AttackState : AbstractState
 
     public override StateType Type { get { return StateType.Attack; } }
 
-    public AttackState(CharacterController2D characterController, IStateInputProvider inputProvider,
-        WeaponManager weaponManager) : base(characterController, inputProvider)
+    public AttackState(CharacterController2D characterController, IInputManager inputManager,
+        WeaponManager weaponManager) : base(characterController, inputManager)
     {
         this.weaponManager = weaponManager;
     }
@@ -24,9 +24,18 @@ public class AttackState : AbstractState
             return true;
         }
 
+        if (current == StateType.Climb)
+        {
+            weaponManager.SetDefaultGroup();
+        }
+
         if ((current == StateType.Idle || current == StateType.Run || current == StateType.FreeFall) && weaponManager.CheckUserInput())
         {
             return true;
+        }
+        else
+        {
+            weaponManager.ClearUserInput();
         }
 
         return false;

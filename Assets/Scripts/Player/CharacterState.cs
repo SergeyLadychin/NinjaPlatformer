@@ -5,21 +5,11 @@ using UnityEngine;
 
 public class CharacterState : MonoBehaviour
 {
-    private StateInput stateInput;
-
-    private const float groundCheckRadius = 0.1f;
-
-    private Transform groundCheck;
-    private Transform climbCheck;
-    private Transform headCheck;
     private Animator animator;
-    private Rigidbody2D _rigidbody2D;
     private CharacterController2D characterController;
+    private IInputManager inputManager;
 
     public bool allowDoubleJump;
-    public LayerMask whatIsGround;
-    public LayerMask whatIsClimbArea;
-    public float climbCheckRadius = 5.0f;
 
     private IState currentState
     {
@@ -32,24 +22,22 @@ public class CharacterState : MonoBehaviour
 
     void Awake()
     {
-        stateInput = new StateInput();
+        inputManager = GetComponent<IInputManager>();
         characterController = GetComponent<CharacterController2D>();
-        var stateInputProvider = new StateInputProvider();
-        stateInputProvider.Set(stateInput);
 
         allStates = new Dictionary<StateType, IState>();
-        allStates.Add(StateType.Idle, new IdleState(characterController, stateInputProvider));
-        allStates.Add(StateType.Run, new RunState(characterController, stateInputProvider));
-        allStates.Add(StateType.Jump, new JumpState(characterController, stateInputProvider));
-        allStates.Add(StateType.FreeFall, new InAirState(characterController, stateInputProvider));
-        allStates.Add(StateType.PrepareToClimb, new PrepareToClimbState(characterController, stateInputProvider));
-        allStates.Add(StateType.ClimbJumpOff, new ClimbJumpOffState(characterController, stateInputProvider));
-        allStates.Add(StateType.Climb, new ClimbState(characterController, stateInputProvider));
-        allStates.Add(StateType.Attack, new AttackState(characterController, stateInputProvider, GetComponent<WeaponManager>()));
+        allStates.Add(StateType.Idle, new IdleState(characterController, inputManager));
+        allStates.Add(StateType.Run, new RunState(characterController, inputManager));
+        allStates.Add(StateType.Jump, new JumpState(characterController, inputManager));
+        allStates.Add(StateType.FreeFall, new InAirState(characterController, inputManager));
+        allStates.Add(StateType.PrepareToClimb, new PrepareToClimbState(characterController, inputManager));
+        allStates.Add(StateType.ClimbJumpOff, new ClimbJumpOffState(characterController, inputManager));
+        allStates.Add(StateType.Climb, new ClimbState(characterController, inputManager));
+        allStates.Add(StateType.Attack, new AttackState(characterController, inputManager, GetComponent<WeaponManager>()));
 
         if (allowDoubleJump)
         {
-            allStates.Add(StateType.DoubleJump, new DoubleJumpState(characterController, stateInputProvider));
+            allStates.Add(StateType.DoubleJump, new DoubleJumpState(characterController, inputManager));
         }
 
         statesHierarchy = new List<IState>();
@@ -64,75 +52,21 @@ public class CharacterState : MonoBehaviour
         statesHierarchy.Add(allStates[StateType.Idle]);
 
         animator = GetComponent<Animator>();
-        groundCheck = transform.Find("GroundCheck");
-        climbCheck = transform.Find("ClimbCheck");
-        headCheck = transform.Find("HeadCheck");
-        _rigidbody2D = GetComponent<Rigidbody2D>();
-    }
-
-    void Update()
-    {
-        //Check if flag was dropped instead of just setting field 'jump' every Update call,
-        //because Update can be called several times before FixedUpdate will be called.
-        if (!stateInput.jump)
-        {
-            stateInput.jump = Input.GetButtonDown("Jump");
-        }
     }
 
     void FixedUpdate()
     {
-        stateInput.horizontal = Input.GetAxis("Horizontal");
-        stateInput.vertical = Input.GetAxis("Vertical");
+        inputManager.FixedUpdateInput();
+        var stateInput = inputManager.GetStateInput();
 
-        bool isGrounded = false;
+        var velocity = characterController.GetVelocity();
 
-        var colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius, whatIsGround);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (colliders[i].gameObject != gameObject)
-            {
-                isGrounded = true;
-            }
-        }
-
-        stateInput.grounded = isGrounded;
-        animator.SetBool("Grounded", isGrounded);
-
-        bool inClimbArea = false;
-        Vector3 whereCanClimb = Vector3.zero;
-        colliders = Physics2D.OverlapCircleAll(climbCheck.position, climbCheckRadius, whatIsClimbArea);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (colliders[i].gameObject != gameObject)
-            {
-                inClimbArea = true;
-                whereCanClimb = colliders[i].gameObject.transform.Find("ClimbPosition").position;
-            }
-        }
-
-        bool climbTopReached = false;
-        if (inClimbArea)
-        {
-            colliders = Physics2D.OverlapCircleAll(headCheck.position, groundCheckRadius);
-            for (int i = 0; i < colliders.Length; i++)
-            {
-                if (colliders[i].gameObject.name == "LadderTop")
-                {
-                    climbTopReached = true;
-                }
-            }
-        }
-
-        stateInput.inClimbArea = inClimbArea;
-        stateInput.climbTopReached = climbTopReached;
-        stateInput.climbPosition = whereCanClimb;
-
-        animator.SetFloat("hSpeed", Mathf.Abs(_rigidbody2D.velocity.x));
-        animator.SetFloat("vSpeed", _rigidbody2D.velocity.y);
-
+        animator.SetBool("Grounded", stateInput.grounded);
+        animator.SetFloat("hSpeed", Mathf.Abs(velocity.x));
+        animator.SetFloat("vSpeed", velocity.y);
+        Debug.LogFormat("Horizontal {0}, Vertical {1}, InClimbA {2}", stateInput.horizontal, stateInput.vertical, stateInput.inClimbArea);
         UpdateState();
-        stateInput.jump = false;
+        inputManager.ClearInput();
     }
 
     private void UpdateState()
@@ -159,15 +93,13 @@ public class CharacterState : MonoBehaviour
                 }
             }
         }
-        //Debug.Log(string.Format("Current state {0}", currentState.Type));
+        Debug.Log(string.Format("Current state {0}", currentState.Type));
         currentState.Update();
     }
 }
 
 public enum StateType
 {
-    TransitionFail = -2,
-    Undefined = -1,
     Idle,
     Run,
     Jump,

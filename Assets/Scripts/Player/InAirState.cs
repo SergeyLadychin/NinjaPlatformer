@@ -6,13 +6,13 @@ public class InAirState : AbstractState
 {
     public override StateType Type { get { return StateType.FreeFall; } }
 
-    public InAirState(CharacterController2D characterController, IStateInputProvider stateInputProvider)
-        : base(characterController, stateInputProvider) { }
+    public InAirState(CharacterController2D characterController, IInputManager inputManager)
+        : base(characterController, inputManager) { }
 
     public override bool TryMakeTransition(StateType current, out StateType newState)
     {
         newState = Type;
-        var input = inputProvider.Get();
+        var input = inputManager.GetStateInput();
 
         if (Mathf.Abs(controller.GetVelocity().y) > 0.0f || !input.grounded)
         {
@@ -30,6 +30,6 @@ public class InAirState : AbstractState
 
     public override void Update()
     {
-        controller.AirControl(inputProvider.Get().horizontal);
+        controller.AirControl(inputManager.GetStateInput().horizontal);
     }
 }
