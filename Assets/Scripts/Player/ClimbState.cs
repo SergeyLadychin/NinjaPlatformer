@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class ClimbState : AbstractState
 {
+    private Animator animator;
+    private float speedFraction;
+    private float currentSpeed;
+
     public override StateType Type { get { return StateType.Climb; } }
 
-    public ClimbState(CharacterController2D characterController, IInputManager inputManager)
-        : base(characterController, inputManager) { }
+    public ClimbState(CharacterController2D characterController, IInputManager inputManager, Animator characterAnimator)
+        : base(characterController, inputManager)
+    {
+        animator = characterAnimator;
+    }
 
     public override void Enter()
     {
         base.Enter();
         controller.SetRigidbodyPosition(new Vector3(inputManager.GetStateInput().climbPosition.x, controller.transform.position.y, controller.transform.position.z));
         controller.TurnOffGravity();
+
+        currentSpeed = 0.0f;
+        speedFraction = controller.maxClimbSpeed / 10.0f; //10 is count of animation frames
+        animator.SetBool("Climb", true);
     }
 
     public override bool TryMakeTransition(StateType current, out StateType newState)
@@ -76,13 +87,20 @@ public class ClimbState : AbstractState
         }
         else
         {
+            if (Mathf.Abs(input.vertical) > Constants.axisThreshold)
+            {
+                currentSpeed = (currentSpeed + speedFraction) % controller.maxClimbSpeed;
+            }
             controller.Climb(input.vertical);
         }
+        animator.SetFloat("ClimbSpeed", currentSpeed);
     }
 
     public override void Exit()
     {
         base.Exit();
         controller.TurnOnGravity();
+
+        animator.SetBool("Climb", false);
     }
 }

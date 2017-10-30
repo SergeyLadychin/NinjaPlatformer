@@ -6,7 +6,9 @@ public class WeaponManager : MonoBehaviour
 {
     private const int defaultGroupIndex = 0;
     private int activeGroupIndex = defaultGroupIndex;
-    private bool canFire = true;
+    private bool cooldownFree = true;
+    private bool animationFree = true;
+    private FireEventData fireEventData;
 
     public WeaponGroup[] weaponGroups;
 
@@ -29,7 +31,10 @@ public class WeaponManager : MonoBehaviour
 
 	void Update ()
 	{
-        UpdateActive();
+        if (CanFire())
+        {
+            UpdateActive();
+        }
 
         //Update input
 	    var activeGroup = GetActiveGroup();
@@ -38,7 +43,7 @@ public class WeaponManager : MonoBehaviour
 
     public bool CheckUserInput()
     {
-        if (canFire)
+        if (CanFire())
         {
             var activeGroup = GetActiveGroup();
             return activeGroup.CheckUserInput();
@@ -55,16 +60,31 @@ public class WeaponManager : MonoBehaviour
     public void Fire()
     {
         var activeGroup = GetActiveGroup();
-        var weaponCooldown = activeGroup.Fire();
+        var weaponCooldown = activeGroup.OnFire(out fireEventData);
         if (weaponCooldown > 0.0f)
         {
+            animationFree = false;
             if (activeGroup.deactivateOnFire)
             {
                 activeGroup.Deactive();
                 activeGroupIndex = defaultGroupIndex;
             }
-            StartCoroutine("ProcessCooldown", weaponCooldown);
+            StartCoroutine(ProcessCooldown(weaponCooldown));
         }
+    }
+
+    //FireEvent and FinishFireEvent functions used in pair to syncronize hit and character animation.
+
+    //Function that must be added to appropriate animation clip(using event) to perform attack
+    public void FireEvent(AnimationEvent animEvent)
+    {
+        fireEventData.group.items[fireEventData.itemIndex].weapon.Fire();
+    }
+
+    //Function that must be added to the end of animation clip(using event) of perfomed attack
+    public void FinishFireEvent(AnimationEvent animEvent)
+    {
+        animationFree = true;
     }
 
     public void SetDefaultGroup()
@@ -79,9 +99,9 @@ public class WeaponManager : MonoBehaviour
 
     private IEnumerator ProcessCooldown(float cooldownTime)
     {
-        canFire = false;
+        cooldownFree = false;
         yield return new WaitForSeconds(cooldownTime);
-        canFire = true;
+        cooldownFree = true;
     }
 
     private void UpdateActive()
@@ -116,5 +136,22 @@ public class WeaponManager : MonoBehaviour
     private WeaponGroup GetActiveGroup()
     {
         return weaponGroups[activeGroupIndex];
+    }
+
+    private bool CanFire()
+    {
+        return cooldownFree && animationFree;
+    }
+}
+
+public struct FireEventData
+{
+    public WeaponGroup group;
+    public int itemIndex;
+
+    public FireEventData(WeaponGroup weaponGroup, int weaponIndex)
+    {
+        group = weaponGroup;
+        itemIndex = weaponIndex;
     }
 }

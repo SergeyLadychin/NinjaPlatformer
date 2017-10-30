@@ -4,5 +4,18 @@ using UnityEngine;
 
 public abstract class Character : MonoBehaviour
 {
-    public abstract void TakeDamage();
+    protected CharacterState characterState;
+    protected CharacterController2D controller;
+    protected Animator animator;
+
+    public int health;
+
+    void Awake()
+    {
+        characterState = GetComponent<CharacterState>();
+        controller = GetComponent<CharacterController2D>();
+        animator = GetComponent<Animator>();
+    }
+
+    public abstract void TakeDamage(int damageAmount);
 }

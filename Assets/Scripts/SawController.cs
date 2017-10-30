@@ -4,37 +4,32 @@ using UnityEngine;
 
 public class SawController : MonoBehaviour
 {
-    private Transform startTransform;
-    private Transform endTransform;
-    private Transform sawTransform;
-
+    private const int damage = 1000000;
     private float t = 0.0f;
     private int multiplier = 1;
 
-    [HideInInspector]public bool dontMove;
+    [HideInInspector] public bool dontMove;
+    public Transform start;
+    public Transform end;
     public float speed = 0.5f;
     public float angularSpeed = 300.0f;
 
 	void Awake ()
 	{
-	    startTransform = transform.Find("Start");
-	    endTransform = transform.Find("End");
-	    sawTransform = transform.Find("Saw");
-
-	    dontMove = endTransform.localPosition == startTransform.localPosition;
+	    dontMove = start == null || end == null || end.localPosition == start.localPosition;
 	    if (!dontMove)
 	    {
-	        t = (sawTransform.localPosition - startTransform.localPosition).sqrMagnitude / (endTransform.localPosition - startTransform.localPosition).sqrMagnitude;
+	        t = (transform.localPosition - start.localPosition).sqrMagnitude / (end.localPosition - start.localPosition).sqrMagnitude;
         }
 	}
 
 	void Update ()
 	{
-        sawTransform.Rotate(new Vector3(0, 0, Time.deltaTime * angularSpeed));
+        transform.Rotate(new Vector3(0, 0, Time.deltaTime * angularSpeed));
 
         if (!dontMove)
         {
-            sawTransform.localPosition = Vector3.Lerp(startTransform.localPosition, endTransform.localPosition, t);
+            transform.localPosition = Vector3.Lerp(start.localPosition, end.localPosition, t);
 
             t += multiplier * Time.deltaTime * speed;
             if (t > 1.0f)
@@ -47,6 +42,15 @@ public class SawController : MonoBehaviour
                 t = 0.0f;
                 multiplier = 1;
             }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag(Constants.PlayerTag))
+        {
+            var character = other.GetComponent<Character>();
+            character.TakeDamage(damage);
         }
     }
 }

@@ -57,17 +57,24 @@ public class WeaponGroup
         }
     }
 
-    public float Fire()
+    public float OnFire(out FireEventData eventData)
     {
+        eventData = new FireEventData(this, -1);
         for (int i = 0; i < items.Length; i++)
         {
             if (items[i].CheckInput())
             {
-                var cooldown = items[i].weapon.Fire();
+                var cooldown = items[i].weapon.OnFire();
                 items[i].ClearInput();
+                eventData = new FireEventData(this, i);
                 return cooldown;
             }
         }
         return -1.0f;
+    }
+
+    public void Fire(int itemIndex)
+    {
+        items[itemIndex].weapon.Fire();
     }
 }

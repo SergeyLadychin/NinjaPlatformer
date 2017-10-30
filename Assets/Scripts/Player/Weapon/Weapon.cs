@@ -8,6 +8,7 @@ public abstract class Weapon : MonoBehaviour
     protected CharacterController2D controller;
 
     public float cooldown;
+    public int damage;
 
     [HideInInspector]
     public IInputManager inputManager;
@@ -29,5 +30,7 @@ public abstract class Weapon : MonoBehaviour
 
     }
 
-    public abstract float Fire();
+    public abstract float OnFire();
+
+    public abstract void Fire();
 }

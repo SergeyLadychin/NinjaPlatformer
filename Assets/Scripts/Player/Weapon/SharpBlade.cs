@@ -7,16 +7,24 @@ public class SharpBlade : Weapon
     public float attackRadius;
     public LayerMask whoIsEnemy;
 
-    public override float Fire()
+    public override float OnFire()
+    {
+        animator.SetBool("BladeAttack", true);
+        return cooldown;
+    }
+
+    public override void Fire()
     {
         Debug.DrawLine(transform.position, transform.position + controller.GetFacingDirection() * attackRadius);
         var colliders = Physics2D.OverlapCircleAll(transform.position, attackRadius, whoIsEnemy);
         for (int i = 0; i < colliders.Length; i++)
         {
-            var enemy = colliders[i].gameObject.GetComponent<Enemy>();
-            enemy.TakeDamage();
+            var enemy = colliders[i].gameObject.GetComponent<Character>();
+            if (enemy)
+            {
+                enemy.TakeDamage(damage);
+            }
         }
-
-        return cooldown;
+        animator.SetBool("BladeAttack", false);
     }
 }

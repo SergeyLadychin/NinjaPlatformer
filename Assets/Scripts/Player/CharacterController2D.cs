@@ -5,6 +5,7 @@ using UnityEngine;
 public class CharacterController2D : MonoBehaviour
 {
     public float maxSpeed = 7.0f;
+    public float maxClimbSpeed = 5.0f;
     public float jumpForce = 100.0f;
     public bool airControl = true;
     [Range(0.0f, 1.0f)]
@@ -37,7 +38,7 @@ public class CharacterController2D : MonoBehaviour
 
     public void Climb(float climb)
     {
-        _rigidbody2D.velocity = new Vector2(0.0f, climb * maxSpeed);
+        _rigidbody2D.velocity = new Vector2(0.0f, climb * maxClimbSpeed);
     }
 
     public bool CheckClimbPosition(Vector3 climbPosition)
@@ -74,6 +75,11 @@ public class CharacterController2D : MonoBehaviour
     public Vector3 GetFacingDirection()
     {
         return facingRight ? Vector3.right : Vector3.left;
+    }
+
+    public void SetSimulated(bool simulated)
+    {
+        _rigidbody2D.simulated = false;
     }
 
     void MoveInternal(Vector2 velocity, float facing)

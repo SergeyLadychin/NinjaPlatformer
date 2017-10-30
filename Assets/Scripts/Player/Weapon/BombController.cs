@@ -6,6 +6,8 @@ public class BombController : MonoBehaviour
 {
     private Rigidbody2D _rigidbody2D;
 
+    public int damage;
+    public float detonationRadius;
     public float detonationTimer;
 
     void Awake()
@@ -31,6 +33,17 @@ public class BombController : MonoBehaviour
 
     void DetonateBomb()
     {
+        _rigidbody2D.simulated = false;
+        _rigidbody2D.velocity = Vector2.zero;
+        var colliders = Physics2D.OverlapCircleAll(transform.position, detonationRadius);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            var character = colliders[i].GetComponent<Character>();
+            if (character)
+            {
+                character.TakeDamage(damage);
+            }
+        }
         Destroy(gameObject);
     }
 }

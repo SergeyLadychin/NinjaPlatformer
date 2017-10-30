@@ -4,16 +4,21 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    private SpriteRenderer renderer;
+
+    public int damage;
     public float lifeTime;
     public float speed;
     public string targetTag;
+    public AmmoHit ammoHitObject;
 
-    [HideInInspector]public Vector3 flyDirection;
+    [HideInInspector] public Vector3 flyDirection;
 
     void Awake()
     {
-        StartCoroutine("Timer");
+        StartCoroutine(Timer(lifeTime));
         StartCoroutine("Move");
+        renderer = GetComponent<SpriteRenderer>();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -21,12 +26,27 @@ public class Bullet : MonoBehaviour
         if (other.CompareTag(targetTag))
         {
             var enemy = other.gameObject.GetComponent<Character>();
-            enemy.TakeDamage();
+            enemy.TakeDamage(damage);
 
-            StopCoroutine("Timer");
-            StopCoroutine("Move");
-            Destroy(gameObject);
+            Hit(true);
         }
+        else if (other.CompareTag("SolidObject"))
+        {
+            Hit(false);
+        }
+    }
+
+    private void Hit(bool targetHit)
+    {
+        StopCoroutine("Timer");
+        StopCoroutine("Move");
+
+        ammoHitObject.targetHit = targetHit;
+        ammoHitObject.gameObject.SetActive(true);
+
+        renderer.enabled = false;
+
+        StartCoroutine(Timer(lifeTime / 2));
     }
 
     private IEnumerator Move()
@@ -38,9 +58,9 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    private IEnumerator Timer()
+    private IEnumerator Timer(float time)
     {
-        yield return new WaitForSeconds(lifeTime);
+        yield return new WaitForSeconds(time);
         Destroy(gameObject);
     }
 }

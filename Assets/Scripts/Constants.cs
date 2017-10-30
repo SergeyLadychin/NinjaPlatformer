@@ -8,4 +8,7 @@ public class Constants
     public const string PlayerTag = "Player";
     public const string EnemyTag = "Enemy";
     public const string ThrowBombButton = "ThrowBomb";
+
+    //Event names
+    public const string PlayerDeathEvent = "PlayerDeath";
 }

@@ -22,6 +22,7 @@ public class CharacterState : MonoBehaviour
 
     void Awake()
     {
+        animator = GetComponent<Animator>();
         inputManager = GetComponent<IInputManager>();
         characterController = GetComponent<CharacterController2D>();
 
@@ -32,7 +33,7 @@ public class CharacterState : MonoBehaviour
         allStates.Add(StateType.FreeFall, new InAirState(characterController, inputManager));
         allStates.Add(StateType.PrepareToClimb, new PrepareToClimbState(characterController, inputManager));
         allStates.Add(StateType.ClimbJumpOff, new ClimbJumpOffState(characterController, inputManager));
-        allStates.Add(StateType.Climb, new ClimbState(characterController, inputManager));
+        allStates.Add(StateType.Climb, new ClimbState(characterController, inputManager, animator));
         allStates.Add(StateType.Attack, new AttackState(characterController, inputManager, GetComponent<WeaponManager>()));
 
         if (allowDoubleJump)
@@ -50,8 +51,6 @@ public class CharacterState : MonoBehaviour
         }
         statesHierarchy.Add(allStates[StateType.FreeFall]);
         statesHierarchy.Add(allStates[StateType.Idle]);
-
-        animator = GetComponent<Animator>();
     }
 
     void FixedUpdate()
@@ -64,7 +63,7 @@ public class CharacterState : MonoBehaviour
         animator.SetBool("Grounded", stateInput.grounded);
         animator.SetFloat("hSpeed", Mathf.Abs(velocity.x));
         animator.SetFloat("vSpeed", velocity.y);
-        Debug.LogFormat("Horizontal {0}, Vertical {1}, InClimbA {2}", stateInput.horizontal, stateInput.vertical, stateInput.inClimbArea);
+
         UpdateState();
         inputManager.ClearInput();
     }
@@ -93,7 +92,7 @@ public class CharacterState : MonoBehaviour
                 }
             }
         }
-        Debug.Log(string.Format("Current state {0}", currentState.Type));
+        //Debug.Log(string.Format("Current state {0}", currentState.Type));
         currentState.Update();
     }
 }

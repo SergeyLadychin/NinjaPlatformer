@@ -50,13 +50,18 @@ public class BombLauncherController : Weapon
         gameObject.SetActive(false);
     }
 
-    public override float Fire()
+    public override float OnFire()
+    {
+        animator.SetBool("Throw", true);
+        return cooldown;
+    }
+
+    public override void Fire()
     {
         var bombObject = Instantiate(bomb, transform.position, Quaternion.identity);
         var bombController = bombObject.GetComponent<BombController>();
         bombController.ThrowBomb(velocity);
-
-        return cooldown;
+        animator.SetBool("Throw", false);
     }
 
     private Vector3 CalculateStartVelocity(Vector3 startPosition, Vector3 endPosition)
