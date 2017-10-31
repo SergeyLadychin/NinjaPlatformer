@@ -29,7 +29,7 @@ public class AttackState : AbstractState
             weaponManager.SetDefaultGroup();
         }
 
-        if ((current == StateType.Idle || current == StateType.Run || current == StateType.FreeFall) && weaponManager.CheckUserInput())
+        if (weaponManager.CheckUserInput(current))
         {
             return true;
         }

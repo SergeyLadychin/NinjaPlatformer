@@ -17,7 +17,7 @@ public class GroundCheck : MonoBehaviour
     public bool IsGrounded()
     {
         var collidersCount = Physics2D.OverlapCircleNonAlloc(transform.position, groundCheckRadius, colliders, whatIsGround);
-
+        Debug.DrawLine(transform.position, transform.position + Vector3.down * groundCheckRadius, Color.green);
         for (int i = 0; i < collidersCount; i++)
         {
             if (colliders[i].gameObject != gameObject)

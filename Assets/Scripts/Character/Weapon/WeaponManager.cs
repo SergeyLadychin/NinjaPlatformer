@@ -41,12 +41,12 @@ public class WeaponManager : MonoBehaviour
         activeGroup.UpdateInput();
 	}
 
-    public bool CheckUserInput()
+    public bool CheckUserInput(StateType currentState)
     {
         if (CanFire())
         {
             var activeGroup = GetActiveGroup();
-            return activeGroup.CheckUserInput();
+            return activeGroup.CheckUserInput(currentState);
         }
         return false;
     }

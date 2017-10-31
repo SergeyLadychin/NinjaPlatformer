@@ -9,16 +9,17 @@ public class CharacterState : MonoBehaviour
     private CharacterController2D characterController;
     private IInputManager inputManager;
 
-    public bool allowDoubleJump;
-
     private IState currentState
     {
-        get { return statesHierarchy[statesHierarchy.Count - 1]; }
-        set { statesHierarchy[statesHierarchy.Count - 1] = value; }
+        get { return statesHierarchyList[statesHierarchyList.Count - 1]; }
+        set { statesHierarchyList[statesHierarchyList.Count - 1] = value; }
     }
 
     private Dictionary<StateType, IState> allStates;
-    private List<IState> statesHierarchy;
+    private List<IState> statesHierarchyList;
+
+    public StateType[] characterStates;
+    public StateType[] statesHierarchy;
 
     void Awake()
     {
@@ -27,30 +28,16 @@ public class CharacterState : MonoBehaviour
         characterController = GetComponent<CharacterController2D>();
 
         allStates = new Dictionary<StateType, IState>();
-        allStates.Add(StateType.Idle, new IdleState(characterController, inputManager));
-        allStates.Add(StateType.Run, new RunState(characterController, inputManager));
-        allStates.Add(StateType.Jump, new JumpState(characterController, inputManager));
-        allStates.Add(StateType.FreeFall, new InAirState(characterController, inputManager));
-        allStates.Add(StateType.PrepareToClimb, new PrepareToClimbState(characterController, inputManager));
-        allStates.Add(StateType.ClimbJumpOff, new ClimbJumpOffState(characterController, inputManager));
-        allStates.Add(StateType.Climb, new ClimbState(characterController, inputManager, animator));
-        allStates.Add(StateType.Attack, new AttackState(characterController, inputManager, GetComponent<WeaponManager>()));
-
-        if (allowDoubleJump)
+        for (int i = 0; i < characterStates.Length; i++)
         {
-            allStates.Add(StateType.DoubleJump, new DoubleJumpState(characterController, inputManager));
+            allStates.Add(characterStates[i], CreateState(characterStates[i]));
         }
 
-        statesHierarchy = new List<IState>();
-        statesHierarchy.Add(allStates[StateType.Attack]);
-        statesHierarchy.Add(allStates[StateType.Climb]);
-        statesHierarchy.Add(allStates[StateType.Jump]);
-        if (allowDoubleJump)
+        statesHierarchyList = new List<IState>();
+        for (int i = 0; i < statesHierarchy.Length; i++)
         {
-            statesHierarchy.Add(allStates[StateType.DoubleJump]);
+            statesHierarchyList.Add(allStates[statesHierarchy[i]]);
         }
-        statesHierarchy.Add(allStates[StateType.FreeFall]);
-        statesHierarchy.Add(allStates[StateType.Idle]);
     }
 
     void FixedUpdate()
@@ -70,10 +57,10 @@ public class CharacterState : MonoBehaviour
 
     private void UpdateState()
     {
-        for (int i = 0; i < statesHierarchy.Count; i++)
+        for (int i = 0; i < statesHierarchyList.Count; i++)
         {
             StateType nextState;
-            if (statesHierarchy[i].TryMakeTransition(currentState.Type, out nextState))
+            if (statesHierarchyList[i].TryMakeTransition(currentState.Type, out nextState))
             {
                 if (nextState == currentState.Type)
                     break;
@@ -94,6 +81,35 @@ public class CharacterState : MonoBehaviour
         }
         //Debug.Log(string.Format("Current state {0}", currentState.Type));
         currentState.Update();
+    }
+
+    private IState CreateState(StateType stateType)
+    {
+        switch (stateType)
+        {
+            case StateType.Idle:
+                return new IdleState(characterController, inputManager);
+            case StateType.Run:
+                return new RunState(characterController, inputManager);
+            case StateType.Jump:
+                return new JumpState(characterController, inputManager);
+            case StateType.DoubleJump:
+                return new DoubleJumpState(characterController, inputManager);
+            case StateType.FreeFall:
+                return new InAirState(characterController, inputManager);
+            case StateType.PrepareToClimb:
+                return new PrepareToClimbState(characterController, inputManager);
+            case StateType.ClimbJumpOff:
+                return new ClimbJumpOffState(characterController, inputManager);
+            case StateType.Climb:
+                return new ClimbState(characterController, inputManager, animator);
+            case StateType.Attack:
+                return new AttackState(characterController, inputManager, GetComponent<WeaponManager>());
+            default:
+                Debug.LogErrorFormat("Undefinded state {0}.", stateType);
+                break;
+        }
+        return null;
     }
 }
 
