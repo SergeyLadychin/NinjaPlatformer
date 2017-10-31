@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraPlayerChaser : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
     public Transform player;
     public CameraDeathzone deathzone;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    private SpriteRenderer renderer;
+    private SpriteRenderer spriteRenderer;
 
     public int damage;
     public float lifeTime;
@@ -18,7 +18,7 @@ public class Bullet : MonoBehaviour
     {
         StartCoroutine(Timer(lifeTime));
         StartCoroutine("Move");
-        renderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -44,7 +44,7 @@ public class Bullet : MonoBehaviour
         ammoHitObject.targetHit = targetHit;
         ammoHitObject.gameObject.SetActive(true);
 
-        renderer.enabled = false;
+        spriteRenderer.enabled = false;
 
         StartCoroutine(Timer(lifeTime / 2));
     }
