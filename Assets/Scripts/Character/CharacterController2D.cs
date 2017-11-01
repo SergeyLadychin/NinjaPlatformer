@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class CharacterController2D : MonoBehaviour
 {
+    private Rigidbody2D _rigidbody2D;
+    private bool facingRight = true;
+    private float savedGravityScale;
+
     public float maxSpeed = 7.0f;
     public float maxClimbSpeed = 5.0f;
     public float jumpForce = 100.0f;
     public bool airControl = true;
     [Range(0.0f, 1.0f)]
     public float airControlDegree = 1.0f;
-
-    private Rigidbody2D _rigidbody2D;
-    private bool facingRight = true;
 
     void Awake()
     {
@@ -59,12 +60,13 @@ public class CharacterController2D : MonoBehaviour
 
     public void TurnOffGravity()
     {
+        savedGravityScale = _rigidbody2D.gravityScale;
         _rigidbody2D.gravityScale = 0.0f;
     }
 
     public void TurnOnGravity()
     {
-        _rigidbody2D.gravityScale = 1.0f;
+        _rigidbody2D.gravityScale = savedGravityScale;
     }
 
     public Vector2 GetVelocity()

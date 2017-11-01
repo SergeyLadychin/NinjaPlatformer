@@ -33,4 +33,9 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    public void GoToNextLevel()
+    {
+        Debug.Log("Going to next level. Bitch!");
+    }
 }
