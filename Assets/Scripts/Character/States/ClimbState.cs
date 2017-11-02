@@ -38,7 +38,7 @@ public class ClimbState : AbstractState
                 newState = StateType.Idle;
                 return true;
             }
-            if (input.jump || Mathf.Abs(input.horizontal) > Constants.axisThreshold)
+            if (input.jump || input.horizontalButtonPressed)
             {
                 newState = StateType.ClimbJumpOff;
                 return true;
@@ -68,7 +68,7 @@ public class ClimbState : AbstractState
                     }
                 }
                 //if player in air near climb position, then climb
-                else if (controller.CheckClimbPosition(input.climbPosition))
+                else if (controller.CheckClimbPosition(input.climbPosition, 0.3f))
                 {
                     return true;
                 }

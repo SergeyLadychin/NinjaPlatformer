@@ -113,7 +113,7 @@ public class WeaponManager : MonoBehaviour
         //default group is active if others inactive.
         for (int i = 1; i < weaponGroups.Length; i++)
         {
-            if (Input.GetButtonDown(weaponGroups[i].activationButton))
+            if (weaponGroups[i].IsAvaliable() && Input.GetButtonDown(weaponGroups[i].activationButton))
             {
                 activeGroupIndex = i;
                 buttonPressed = true;

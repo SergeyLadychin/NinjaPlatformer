@@ -15,7 +15,7 @@ public class SharpBlade : Weapon
 
     public override void Fire()
     {
-        Debug.DrawLine(transform.position, transform.position + controller.GetFacingDirection() * attackRadius);
+        Debug.DrawLine(transform.position, transform.position + controller.GetFacingDirection() * attackRadius, Color.green);
         var colliders = Physics2D.OverlapCircleAll(transform.position, attackRadius, whoIsEnemy);
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -26,5 +26,10 @@ public class SharpBlade : Weapon
             }
         }
         animator.SetBool("BladeAttack", false);
+    }
+
+    public override bool IsAvaliable()
+    {
+        return true;
     }
 }

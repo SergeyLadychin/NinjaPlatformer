@@ -42,9 +42,9 @@ public class CharacterController2D : MonoBehaviour
         _rigidbody2D.velocity = new Vector2(0.0f, climb * maxClimbSpeed);
     }
 
-    public bool CheckClimbPosition(Vector3 climbPosition)
+    public bool CheckClimbPosition(Vector3 climbPosition, float epsilon = 0.1f)
     {
-        return Mathf.Abs(transform.position.x - climbPosition.x) < 0.1f;
+        return Mathf.Abs(transform.position.x - climbPosition.x) < epsilon;
     }
 
     public void SetRigidbodyPosition(Vector3 position)
@@ -105,5 +105,13 @@ public class CharacterController2D : MonoBehaviour
         var v = transform.localScale;
         v.x *= -1;
         transform.localScale = v;
+    }
+
+    public void SetFacingDirection(bool right)
+    {
+        if (right && facingRight)
+            return;
+
+        Flip();
     }
 }

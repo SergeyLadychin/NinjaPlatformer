@@ -25,7 +25,7 @@ public class ClimbJumpOffState : AbstractState
     public override void Update()
     {
         var input = inputManager.GetStateInput();
-        if (Mathf.Abs(input.horizontal) > Constants.axisThreshold)
+        if (input.horizontalButtonPressed)
         {
             controller.Move(1.0f * Mathf.Sign(input.horizontal));
         }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SawController : MonoBehaviour
 {
-    private const int damage = 1000000;
     private float t = 0.0f;
     private int multiplier = 1;
 
@@ -42,15 +41,6 @@ public class SawController : MonoBehaviour
                 t = 0.0f;
                 multiplier = 1;
             }
-        }
-    }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag(Constants.PlayerTag))
-        {
-            var character = other.GetComponent<Character>();
-            character.TakeDamage(damage);
         }
     }
 }

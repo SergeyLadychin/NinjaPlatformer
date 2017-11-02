@@ -21,7 +21,7 @@ public class InAirState : AbstractState
 
         if (input.grounded && isCurrent)
         {
-            newState = StateType.Idle;
+            newState = input.horizontalButtonPressed ? StateType.Run : StateType.Idle;
             return true;
         }
 

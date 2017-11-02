@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class BulletSpawner : Weapon
 {
-    public GameObject bulletPrefab;
+    public ObjectGetter bulletGetter;
+    public ObjectGetter ammoHitGetter;
 
     public override float OnFire()
     {
@@ -15,12 +16,27 @@ public class BulletSpawner : Weapon
 
     public override void Fire()
     {
-        var bulletObject = Instantiate(bulletPrefab, transform.position, transform.rotation);
-        var bullet = bulletObject.GetComponent<Bullet>();
+        Bullet bullet = bulletGetter.Get<Bullet>(transform.position, transform.rotation);
+
+        if (bulletGetter.IsFromPool())
+        {
+            bullet.SetDisableFunc(obj => obj.SetActive(false));
+        }
+        else
+        {
+            bullet.SetDisableFunc(Destroy);
+        }
+
         bullet.flyDirection = controller.GetFacingDirection();
-        
+        bullet.ammoHitGetter = ammoHitGetter;
+
         Orient(bullet);
         animator.SetBool("Throw", false);
+    }
+
+    public override bool IsAvaliable()
+    {
+        return true;
     }
 
     private void Orient(Bullet bullet)

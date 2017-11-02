@@ -1,24 +1,35 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    private Rigidbody2D body;
     private SpriteRenderer spriteRenderer;
+    private Action<GameObject> disableAction;
 
     public int damage;
     public float lifeTime;
     public float speed;
     public string targetTag;
-    public AmmoHit ammoHitObject;
+    public ObjectGetter ammoHitGetter;
 
     [HideInInspector] public Vector3 flyDirection;
 
     void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        body = GetComponent<Rigidbody2D>();
+    }
+
+    void OnEnable()
+    {
+        spriteRenderer.enabled = true;
+        body.simulated = true;
+
         StartCoroutine(Timer(lifeTime));
         StartCoroutine("Move");
-        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -28,25 +39,29 @@ public class Bullet : MonoBehaviour
             var enemy = other.gameObject.GetComponent<Character>();
             enemy.TakeDamage(damage);
 
-            Hit(true);
+            Hit(ObjectHit.Body);
         }
         else if (other.CompareTag("SolidObject"))
         {
-            Hit(false);
+            Hit(ObjectHit.SolidObject);
         }
     }
 
-    private void Hit(bool targetHit)
+    public void SetDisableFunc(Action<GameObject> disableAction)
+    {
+        this.disableAction = disableAction;
+    }
+
+    private void Hit(ObjectHit objectHit)
     {
         StopCoroutine("Timer");
         StopCoroutine("Move");
 
-        ammoHitObject.targetHit = targetHit;
-        ammoHitObject.gameObject.SetActive(true);
+        var ammoHitObject = ammoHitGetter.Get<HitAnimation>(transform.position, transform.rotation);
+        ammoHitObject.Init(objectHit, flyDirection);
 
         spriteRenderer.enabled = false;
-
-        StartCoroutine(Timer(lifeTime / 2));
+        body.simulated = false;
     }
 
     private IEnumerator Move()
@@ -61,6 +76,7 @@ public class Bullet : MonoBehaviour
     private IEnumerator Timer(float time)
     {
         yield return new WaitForSeconds(time);
-        Destroy(gameObject);
+        StopCoroutine("Move");
+        disableAction(gameObject);
     }
 }

@@ -22,6 +22,14 @@ public class UserInputManager : MonoBehaviour, IInputManager
         {
             stateInput.jump = Input.GetButtonDown("Jump");
         }
+        if (!stateInput.horizontalButtonPressed)
+        {
+            stateInput.horizontalButtonPressed = Input.GetButton("Horizontal");
+        }
+        if (!stateInput.verticalButtonPressed)
+        {
+            stateInput.verticalButtonPressed = Input.GetButton("Vertical");
+        }
     }
 
     public void FixedUpdateInput()
@@ -39,7 +47,7 @@ public class UserInputManager : MonoBehaviour, IInputManager
 
     public bool GetButtonStatus(string button)
     {
-        return Input.GetButtonDown(button);
+        return this.enabled && Input.GetButtonDown(button);
     }
 
     public StateInput GetStateInput()

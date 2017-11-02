@@ -14,7 +14,7 @@ public class RunState : AbstractState
         newState = Type;
         var input = inputManager.GetStateInput();
 
-        if (Mathf.Abs(input.horizontal) < Constants.axisThreshold)
+        if (!input.horizontalButtonPressed)
         {
             newState = StateType.Idle;
             return true;
@@ -26,14 +26,5 @@ public class RunState : AbstractState
     public override void Update()
     {
         controller.Move(inputManager.GetStateInput().horizontal);
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-        if (inputManager.GetStateInput().stopMoving)
-        {
-            controller.Move(0.0f);
-        }
     }
 }

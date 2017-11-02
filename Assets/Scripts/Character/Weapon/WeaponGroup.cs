@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -77,5 +78,10 @@ public class WeaponGroup
     public void Fire(int itemIndex)
     {
         items[itemIndex].weapon.Fire();
+    }
+
+    public bool IsAvaliable()
+    {
+        return items.Any(i => i.IsAvaliable());
     }
 }

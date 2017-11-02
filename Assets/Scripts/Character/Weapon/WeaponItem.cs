@@ -31,4 +31,9 @@ public class WeaponItem
     {
         buttonPressed = false;
     }
+
+    public bool IsAvaliable()
+    {
+        return weapon.IsAvaliable();
+    }
 }

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BombLauncherController : Weapon
+public class BombLauncherController : Weapon, IPickable
 {
     private LineRenderer lineRenderer;
     private const int segmentCount = 50;
     private Vector3 velocity;
     private Vector3 parentPosition;
 
+    public int count;
     public float flyTime = 1.0f;
     public Sprite targetSprite;
     public GameObject bomb;
@@ -62,6 +63,17 @@ public class BombLauncherController : Weapon
         var bombController = bombObject.GetComponent<BombController>();
         bombController.ThrowBomb(velocity);
         animator.SetBool("Throw", false);
+        count--;
+    }
+
+    public override bool IsAvaliable()
+    {
+        return count != 0;
+    }
+
+    public void Add()
+    {
+        count++;
     }
 
     private Vector3 CalculateStartVelocity(Vector3 startPosition, Vector3 endPosition)

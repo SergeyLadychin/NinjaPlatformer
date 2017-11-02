@@ -33,4 +33,6 @@ public abstract class Weapon : MonoBehaviour
     public abstract float OnFire();
 
     public abstract void Fire();
+
+    public abstract bool IsAvaliable();
 }

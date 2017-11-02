@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AttackState : AbstractState
 {
+    private StateType previousState;
     private WeaponManager weaponManager;
 
     public override StateType Type { get { return StateType.Attack; } }
@@ -20,7 +21,7 @@ public class AttackState : AbstractState
 
         if (isCurrent)
         {
-            newState = StateType.Idle;
+            newState = previousState;
             return true;
         }
 
@@ -31,6 +32,7 @@ public class AttackState : AbstractState
 
         if (weaponManager.CheckUserInput(current))
         {
+            previousState = current;
             return true;
         }
         else
