@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InAirState : AbstractState
+public class FreeFallState : AbstractState
 {
     public override StateType Type { get { return StateType.FreeFall; } }
 
-    public InAirState(CharacterController2D characterController, IInputManager inputManager)
+    public FreeFallState(CharacterController2D characterController, IInputManager inputManager)
         : base(characterController, inputManager) { }
 
     public override bool TryMakeTransition(StateType current, out StateType newState)

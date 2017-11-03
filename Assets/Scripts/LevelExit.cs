@@ -4,14 +4,35 @@ using UnityEngine;
 
 public class LevelExit : MonoBehaviour
 {
-    void OnTriggerStay2D(Collider2D other)
+    private bool playerInside;
+
+    public string nextLevelName;
+
+    void Update()
+    {
+        if (playerInside)
+        {
+            if (Input.GetAxis("Vertical") > Constants.axisThreshold)
+            {
+                playerInside = false;
+                GameManager.GetInstance().GoToNextLevel(nextLevelName);
+            }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag(Constants.PlayerTag))
         {
-            if (Input.GetAxis("Vertical") > 0.0f)
-            {
-                GameManager.GetInstance().GoToNextLevel();
-            }
+            playerInside = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag(Constants.PlayerTag))
+        {
+            playerInside = false;
         }
     }
 }

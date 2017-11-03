@@ -82,7 +82,7 @@ public class WeaponManager : MonoBehaviour
     }
 
     //Function that must be added to the end of animation clip(using event) of perfomed attack
-    public void FinishFireEvent(AnimationEvent animEvent)
+    public void FinishFireEvent()
     {
         animationFree = true;
     }

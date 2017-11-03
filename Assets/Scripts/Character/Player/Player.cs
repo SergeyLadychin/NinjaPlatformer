@@ -22,6 +22,6 @@ public class Player : Character
     private IEnumerator AfterPlayerDeath()
     {
         yield return new WaitForSeconds(GameManager.GetInstance().delayAfterPlayerDeath);
-        GameManager.GetInstance().ProcessPlayerDeath();
+        GameManager.GetInstance().ReloadCurrentLevel();
     }
 }

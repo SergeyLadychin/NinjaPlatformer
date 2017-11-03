@@ -29,13 +29,23 @@ public class GameManager : MonoBehaviour
         return instance;
     }
 
-    public void ProcessPlayerDeath()
+    public void ReloadCurrentLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void GoToNextLevel()
+    public void GoToNextLevel(string nextLevelName)
     {
-        Debug.Log("Going to next level. Bitch!");
+        LoadLevel(nextLevelName);
+    }
+
+    public void GoToMainMenu()
+    {
+        LoadLevel("Test");
+    }
+
+    private void LoadLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);
     }
 }

@@ -6,35 +6,43 @@ public class ScrollingBackground : MonoBehaviour
 {
     private float backgroundDistance;
     private float previousCameraPosition;
+    private Vector3 scrollDirection;
 
     public Transform mainCamera;
+    public ScrollingType type;
     public Transform[] backgrounds;
     public float parallaxSpeed;
     
     void Awake()
     {
-        backgroundDistance = backgrounds[1].position.x - backgrounds[0].position.x;
+        backgroundDistance = GetDistance(backgrounds[1].position, backgrounds[0].position);
         previousCameraPosition = 0.0f;
+        scrollDirection = type == ScrollingType.Horizontal ? Vector3.right : Vector3.up;
     }
 
     void Update()
     {
-        var currentDistance = mainCamera.position.x - backgrounds[1].position.x;
+        var currentDistance = GetDistance(mainCamera.position, backgrounds[1].position);
         if (currentDistance > backgroundDistance)
         {
-            backgrounds[0].position = backgrounds[2].position + new Vector3(backgroundDistance, 0, 0);
+            backgrounds[0].position = backgrounds[2].position + backgroundDistance * scrollDirection;
             SwapBackgrounds(0, 2);
         }
         else if (currentDistance < -backgroundDistance)
         {
-            backgrounds[2].position = backgrounds[0].position + new Vector3(-backgroundDistance, 0, 0);
+            backgrounds[2].position = backgrounds[0].position - backgroundDistance * scrollDirection;
             SwapBackgrounds(2, 0);
         }
-        if (Mathf.Abs(previousCameraPosition - mainCamera.position.x) >  Mathf.Epsilon)
+        if (Mathf.Abs(previousCameraPosition - mainCamera.position.x) > Mathf.Epsilon)
         {
-            transform.position = new Vector3(transform.position.x + parallaxSpeed * Time.deltaTime, transform.position.y, transform.position.z);
+            transform.position = transform.position + parallaxSpeed * Time.deltaTime * scrollDirection;
         }
         previousCameraPosition = mainCamera.position.x;
+    }
+
+    private float GetDistance(Vector3 point1, Vector3 point2)
+    {
+        return type == ScrollingType.Horizontal ? point1.x - point2.x : point1.y - point2.y;
     }
 
     private void SwapBackgrounds(int index1, int index2)
@@ -45,4 +53,10 @@ public class ScrollingBackground : MonoBehaviour
         backgrounds[1] = temp2;
         backgrounds[index1] = temp1;
     }
+}
+
+public enum ScrollingType
+{
+    Horizontal,
+    Vertical
 }

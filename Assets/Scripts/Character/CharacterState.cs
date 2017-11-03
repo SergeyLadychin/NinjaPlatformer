@@ -96,7 +96,7 @@ public class CharacterState : MonoBehaviour
             case StateType.DoubleJump:
                 return new DoubleJumpState(characterController, inputManager);
             case StateType.FreeFall:
-                return new InAirState(characterController, inputManager);
+                return new FreeFallState(characterController, inputManager);
             case StateType.PrepareToClimb:
                 return new PrepareToClimbState(characterController, inputManager);
             case StateType.ClimbJumpOff:

@@ -49,7 +49,7 @@ public class ClimbState : AbstractState
         if (input.inClimbArea)
         {
             //First check if pressed button up or down
-            if (Mathf.Abs(input.vertical) > Constants.axisThreshold)
+            if (input.verticalButtonPressed && !input.horizontalButtonPressed)
             {
                 //then check if grounded
                 if (input.grounded)

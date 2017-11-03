@@ -7,12 +7,13 @@ using Object = UnityEngine.Object;
 [Serializable]
 public class ObjectGetter
 {
-    public GameObject objectPrefab;
-    public ObjectPool objectPool;
+    [SerializeField]private GetterType type;
+    [SerializeField]private GameObject objectPrefab;
+    [SerializeField]private ObjectPool objectPool;
 
     public GameObject Get(Vector3 position, Quaternion rotation)
     {
-        if (objectPool != null)
+        if (type == GetterType.Pool)
         {
             return objectPool.GetObject(position, rotation);
         }
@@ -32,4 +33,10 @@ public class ObjectGetter
     {
         return objectPool != null;
     }
+}
+
+public enum GetterType
+{
+    Prefab,
+    Pool
 }
