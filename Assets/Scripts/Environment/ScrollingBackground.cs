@@ -9,7 +9,7 @@ public class ScrollingBackground : MonoBehaviour
     private Vector3 scrollDirection;
 
     public Transform mainCamera;
-    public ScrollingType type;
+    public MoveAxis type;
     public Transform[] backgrounds;
     public float parallaxSpeed;
     
@@ -17,7 +17,7 @@ public class ScrollingBackground : MonoBehaviour
     {
         backgroundDistance = GetDistance(backgrounds[1].position, backgrounds[0].position);
         previousCameraPosition = 0.0f;
-        scrollDirection = type == ScrollingType.Horizontal ? Vector3.right : Vector3.up;
+        scrollDirection = type == MoveAxis.Horizontal ? Vector3.right : Vector3.up;
     }
 
     void Update()
@@ -42,7 +42,7 @@ public class ScrollingBackground : MonoBehaviour
 
     private float GetDistance(Vector3 point1, Vector3 point2)
     {
-        return type == ScrollingType.Horizontal ? point1.x - point2.x : point1.y - point2.y;
+        return type == MoveAxis.Horizontal ? point1.x - point2.x : point1.y - point2.y;
     }
 
     private void SwapBackgrounds(int index1, int index2)
@@ -55,7 +55,7 @@ public class ScrollingBackground : MonoBehaviour
     }
 }
 
-public enum ScrollingType
+public enum MoveAxis
 {
     Horizontal,
     Vertical

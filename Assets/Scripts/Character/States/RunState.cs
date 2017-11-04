@@ -14,7 +14,7 @@ public class RunState : AbstractState
         newState = Type;
         var input = inputManager.GetStateInput();
 
-        if (!input.horizontalButtonPressed)
+        if (!input.horizontal.buttonPressed)
         {
             newState = StateType.Idle;
             return true;
@@ -25,6 +25,6 @@ public class RunState : AbstractState
      
     public override void Update()
     {
-        controller.Move(inputManager.GetStateInput().horizontal);
+        controller.Move(inputManager.GetStateInput().horizontal.magnitude);
     }
 }

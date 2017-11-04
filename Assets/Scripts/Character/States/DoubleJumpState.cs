@@ -37,6 +37,6 @@ public class DoubleJumpState : AbstractState
 
     public override void Update()
     {
-        controller.Jump();
+        controller.Jump(controller.doubleJumpForce);
     }
 }

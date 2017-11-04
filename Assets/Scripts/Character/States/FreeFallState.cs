@@ -19,9 +19,10 @@ public class FreeFallState : AbstractState
             return true;
         }
 
-        if (input.grounded && isCurrent)
+        //grounded and current
+        if (isCurrent)
         {
-            newState = input.horizontalButtonPressed ? StateType.Run : StateType.Idle;
+            newState = input.horizontal.buttonPressed ? StateType.Run : StateType.Idle;
             return true;
         }
 
@@ -30,6 +31,6 @@ public class FreeFallState : AbstractState
 
     public override void Update()
     {
-        controller.AirControl(inputManager.GetStateInput().horizontal);
+        controller.AirControl(inputManager.GetStateInput().horizontal.magnitude);
     }
 }

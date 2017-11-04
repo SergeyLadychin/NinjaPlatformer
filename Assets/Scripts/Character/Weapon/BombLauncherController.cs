@@ -53,7 +53,7 @@ public class BombLauncherController : Weapon, IPickable
 
     public override float OnFire()
     {
-        animator.SetBool("Throw", true);
+        animator.SetTrigger("Shoot");
         return cooldown;
     }
 
@@ -62,7 +62,6 @@ public class BombLauncherController : Weapon, IPickable
         var bombObject = Instantiate(bomb, transform.position, Quaternion.identity);
         var bombController = bombObject.GetComponent<BombController>();
         bombController.ThrowBomb(velocity);
-        animator.SetBool("Throw", false);
         count--;
     }
 

@@ -21,6 +21,9 @@ public class NavigationPoint : MonoBehaviour
 
     public bool GetAttackButtonStatus(Transform objectPosition, Vector2 objectDirection, string button)
     {
+        if (pointWeaponAction == null)
+            return false;
+
         var actions = pointWeaponAction.CheckWeaponFire(objectPosition, objectDirection);
         postponeMoveActions = (actions & WeaponActions.Holt) == WeaponActions.Holt;
         return (actions & WeaponActions.Shoot) == WeaponActions.Shoot;

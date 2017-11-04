@@ -20,7 +20,7 @@ public class IdleState : AbstractState
         newState = Type;
         var input = inputManager.GetStateInput();
 
-        if (input.horizontalButtonPressed)
+        if (input.horizontal.buttonPressed)
         {
             newState = StateType.Run;
             return true;

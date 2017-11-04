@@ -33,12 +33,12 @@ public class ClimbState : AbstractState
         var input = inputManager.GetStateInput();
         if (isCurrent)
         {
-            if (input.grounded && input.vertical < -Constants.axisThreshold)
+            if (input.grounded && input.vertical.magnitude < -Constants.axisThreshold)
             {
                 newState = StateType.Idle;
                 return true;
             }
-            if (input.jump || input.horizontalButtonPressed)
+            if (input.jump || input.horizontal.buttonPressed)
             {
                 newState = StateType.ClimbJumpOff;
                 return true;
@@ -49,13 +49,13 @@ public class ClimbState : AbstractState
         if (input.inClimbArea)
         {
             //First check if pressed button up or down
-            if (input.verticalButtonPressed && !input.horizontalButtonPressed)
+            if (input.vertical.buttonPressed && !input.horizontal.buttonPressed)
             {
                 //then check if grounded
                 if (input.grounded)
                 {
                     //if grounded, then player can climb if button up was pressed
-                    if (input.vertical > Constants.axisThreshold)
+                    if (input.vertical.magnitude > Constants.axisThreshold)
                     {
                         //if player near position where he/she can climb, then climb
                         //if not move player closer to this position.
@@ -81,17 +81,17 @@ public class ClimbState : AbstractState
     public override void Update()
     {
         var input = inputManager.GetStateInput();
-        if (input.climbTopReached && input.vertical > Constants.axisThreshold)
+        if (input.climbTopReached && input.vertical.magnitude > Constants.axisThreshold)
         {
             controller.Climb(0.0f);
         }
         else
         {
-            if (Mathf.Abs(input.vertical) > Constants.axisThreshold)
+            if (Mathf.Abs(input.vertical.magnitude) > Constants.axisThreshold)
             {
                 currentSpeed = (currentSpeed + speedFraction) % controller.maxClimbSpeed;
             }
-            controller.Climb(input.vertical);
+            controller.Climb(input.vertical.magnitude);
         }
         animator.SetFloat("ClimbSpeed", currentSpeed);
     }

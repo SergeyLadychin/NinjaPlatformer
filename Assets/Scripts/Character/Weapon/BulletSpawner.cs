@@ -10,7 +10,7 @@ public class BulletSpawner : Weapon
 
     public override float OnFire()
     {
-        animator.SetBool("Throw", true);
+        animator.SetTrigger("Shoot");
         return cooldown;
     }
 
@@ -31,7 +31,6 @@ public class BulletSpawner : Weapon
         bullet.ammoHitGetter = ammoHitGetter;
 
         Orient(bullet);
-        animator.SetBool("Throw", false);
     }
 
     public override bool IsAvaliable()

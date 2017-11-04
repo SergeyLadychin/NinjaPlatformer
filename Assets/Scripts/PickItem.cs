@@ -7,6 +7,7 @@ public class PickItem : MonoBehaviour
     private IPickable pickObject;
     private bool pickedUp;
 
+    public string targetTag;
     public GameObject pickUpCounter;
 
     void Awake()
@@ -20,7 +21,7 @@ public class PickItem : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(Constants.PlayerTag) && !pickedUp)
+        if (other.CompareTag(targetTag) && !pickedUp)
         {
             pickObject.Add();
             pickedUp = true;

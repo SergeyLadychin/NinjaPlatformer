@@ -7,12 +7,9 @@ public struct StateInput
     public bool grounded;
     public bool inClimbArea;
     public bool climbTopReached;
-    public float horizontal;
-    public float vertical;
+    public AxisInput horizontal;
+    public AxisInput vertical;
     public bool jump;
-
-    public bool horizontalButtonPressed;
-    public bool verticalButtonPressed;
 
     public Vector3 climbPosition;
 
@@ -26,13 +23,10 @@ public struct StateInput
         grounded = false;
         inClimbArea = false;
         climbTopReached = false;
-        horizontal = 0.0f;
-        vertical = 0.0f;
+        horizontal.Clear();
+        vertical.Clear();
         jump = false;
         climbPosition = Vector3.zero;
-
-        horizontalButtonPressed = false;
-        verticalButtonPressed = false;
     }
 
     public void Populate(StateInput input)
@@ -44,8 +38,19 @@ public struct StateInput
         vertical = input.vertical;
         jump = input.jump;
         climbPosition = input.climbPosition;
+    }
+}
 
-        horizontalButtonPressed = input.horizontalButtonPressed;
-        verticalButtonPressed = input.verticalButtonPressed;
+public struct AxisInput
+{
+    public float magnitude;
+
+    public bool buttonPressed;
+
+    public void Clear()
+    {
+        magnitude = 0.0f;
+
+        buttonPressed = false;
     }
 }

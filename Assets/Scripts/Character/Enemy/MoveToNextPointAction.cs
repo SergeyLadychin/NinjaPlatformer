@@ -9,6 +9,8 @@ public class MoveToNextPointAction : MonoBehaviour, INavigationPointMoveAction
     private bool changePoint;
     private NavigationPoint point;
 
+    public MoveAxis moveDirection;
+    public float validationDistance = sqrDistanceThreshold;
     public bool waitBeforeChangePoint;
     public float waitTime;
     public bool turnToNextPointOnWait;
@@ -24,17 +26,22 @@ public class MoveToNextPointAction : MonoBehaviour, INavigationPointMoveAction
         {
             if (!NextPointReached(objectPosition))
             {
-                objectInput.horizontal = 1.0f * Mathf.Sign(point.nextPoint.transform.position.x - objectPosition.position.x);
-                objectInput.horizontalButtonPressed = true;
+                if (moveDirection == MoveAxis.Horizontal)
+                {
+                    UpdateAxisInput(objectPosition, 1.0f, ref objectInput.horizontal);
+                }
+                else
+                {
+                    UpdateAxisInput(objectPosition, 1.0f, ref objectInput.vertical);
+                }
                 return;
             }
 
-            if (waitBeforeChangePoint)
+            if (waitBeforeChangePoint && moveDirection == MoveAxis.Horizontal)
             {
                 if (turnToNextPointOnWait)
                 {
-                    objectInput.horizontal = 0.02f * Mathf.Sign(point.transform.position.x - objectPosition.position.x);
-                    objectInput.horizontalButtonPressed = true;
+                    UpdateAxisInput(objectPosition, -0.02f, ref objectInput.horizontal);
                 }
                 StartCoroutine(WaitToMove());
             }
@@ -57,9 +64,20 @@ public class MoveToNextPointAction : MonoBehaviour, INavigationPointMoveAction
         changePoint = false;
     }
 
+    private void UpdateAxisInput(Transform objectPosition, float moveMagnitude, ref AxisInput axisInput)
+    {
+        axisInput.magnitude = moveMagnitude * Mathf.Sign(GetVectorComponent(point.nextPoint.transform.position) - GetVectorComponent(objectPosition.position));
+        axisInput.buttonPressed = true;
+    }
+
+    private float GetVectorComponent(Vector3 vector)
+    {
+        return moveDirection == MoveAxis.Horizontal ? vector.x : vector.y;
+    }
+
     private bool NextPointReached(Transform objectPosition)
     {
-        return (point.nextPoint.transform.position - objectPosition.position).sqrMagnitude <= sqrDistanceThreshold;
+        return (point.nextPoint.transform.position - objectPosition.position).sqrMagnitude <= validationDistance;
     }
 
     private IEnumerator WaitToMove()

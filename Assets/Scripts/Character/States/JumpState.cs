@@ -24,6 +24,6 @@ public class JumpState : AbstractState
 
     public override void Update()
     {
-        controller.Jump();
+        controller.Jump(controller.jumpForce);
     }
 }

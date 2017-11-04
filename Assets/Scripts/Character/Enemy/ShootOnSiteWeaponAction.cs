@@ -15,7 +15,7 @@ public class ShootOnSiteWeaponAction : MonoBehaviour, INavigationPointWeaponActi
     {
         var result = WeaponActions.None;
         var hit = Physics2D.Raycast(transform.position, direction, viewDistance, solidObjects);
-        //Debug.DrawLine(transform.position, transform.position + controller.GetFacingDirection() * viewDistance, Color.green);
+        Debug.DrawLine(transform.position, transform.position + (Vector3)direction * viewDistance, Color.green);
         if (hit.rigidbody && hit.rigidbody.CompareTag(Constants.PlayerTag))
         {
             if (stopToShoot)

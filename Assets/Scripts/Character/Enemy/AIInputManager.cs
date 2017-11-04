@@ -10,6 +10,7 @@ public class AIInputManager : MonoBehaviour, IInputManager
 
     public FacingDirection initialFacingDirection;
     public GroundCheck groundCheck;
+    public ClimbCheck climbCheck;
     public NavigationPoint firstNavigationPoint;
 
     public bool GetButtonStatus(string button)
@@ -20,6 +21,14 @@ public class AIInputManager : MonoBehaviour, IInputManager
     public void FixedUpdateInput()
     {
         stateInput.grounded = groundCheck.IsGrounded();
+        if (climbCheck != null)
+        {
+            stateInput.inClimbArea = climbCheck.IsInClimbArea(out stateInput.climbPosition);
+            if (stateInput.inClimbArea)
+            {
+                stateInput.climbTopReached = climbCheck.ClimbTopReached();
+            }
+        }
     }
 
     public StateInput GetStateInput()

@@ -22,6 +22,6 @@ public class PrepareToClimbState : AbstractState
     public override void Update()
     {
         var input = inputManager.GetStateInput();
-        controller.Move(Mathf.Sign((input.climbPosition - controller.transform.position).x) * input.vertical);
+        controller.Move(Mathf.Sign((input.climbPosition - controller.transform.position).x) * input.vertical.magnitude);
     }
 }

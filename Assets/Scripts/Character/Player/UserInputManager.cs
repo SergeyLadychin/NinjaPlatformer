@@ -22,20 +22,20 @@ public class UserInputManager : MonoBehaviour, IInputManager
         {
             stateInput.jump = Input.GetButtonDown("Jump");
         }
-        if (!stateInput.horizontalButtonPressed)
+        if (!stateInput.horizontal.buttonPressed)
         {
-            stateInput.horizontalButtonPressed = Input.GetButton("Horizontal");
+            stateInput.horizontal.buttonPressed = Input.GetButton("Horizontal");
         }
-        if (!stateInput.verticalButtonPressed)
+        if (!stateInput.vertical.buttonPressed)
         {
-            stateInput.verticalButtonPressed = Input.GetButton("Vertical");
+            stateInput.vertical.buttonPressed = Input.GetButton("Vertical");
         }
     }
 
     public void FixedUpdateInput()
     {
-        stateInput.horizontal = Input.GetAxis("Horizontal");
-        stateInput.vertical = Input.GetAxis("Vertical");
+        stateInput.horizontal.magnitude = Input.GetAxis("Horizontal");
+        stateInput.vertical.magnitude = Input.GetAxis("Vertical");
         stateInput.grounded = groundCheck.IsGrounded();
 
         stateInput.inClimbArea = climbCheck.IsInClimbArea(out stateInput.climbPosition);

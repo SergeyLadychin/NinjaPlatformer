@@ -11,6 +11,7 @@ public class CharacterController2D : MonoBehaviour
     public float maxSpeed = 7.0f;
     public float maxClimbSpeed = 5.0f;
     public float jumpForce = 100.0f;
+    public float doubleJumpForce = 100.0f;
     public bool airControl = true;
     [Range(0.0f, 1.0f)]
     public float airControlDegree = 1.0f;
@@ -23,6 +24,11 @@ public class CharacterController2D : MonoBehaviour
     public void Move(float move)
     {
         MoveInternal(new Vector2(move * maxSpeed, _rigidbody2D.velocity.y), move);
+    }
+
+    public void Move(float moveX, float moveY)
+    {
+        MoveInternal(new Vector2(moveX * maxSpeed, moveY * maxSpeed), moveX);
     }
 
     public void AirControl(float move)
@@ -52,10 +58,10 @@ public class CharacterController2D : MonoBehaviour
         _rigidbody2D.position = position;
     }
 
-    public void Jump()
+    public void Jump(float force)
     {
         _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 0.0f);
-        _rigidbody2D.AddForce(Vector2.up * jumpForce);
+        _rigidbody2D.AddForce(Vector2.up * force);
     }
 
     public void TurnOffGravity()
