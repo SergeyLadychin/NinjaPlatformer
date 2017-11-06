@@ -11,10 +11,28 @@ public class HitAnimation : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void Init(ObjectHit targetHit, Vector2 hitDirection)
+    public void Init(EffectType hitType, Vector2 hitDirection)
     {
         Orient(hitDirection);
-        animator.SetFloat("TargetHit", targetHit == ObjectHit.Body ? 0.0f : 1.0f);
+
+        float targetHit = 0.0f;
+        switch (hitType)
+        {
+            case EffectType.Blood:
+                targetHit = 0.0f;
+                break;
+            case EffectType.SolidObjectHit:
+                targetHit = 1.0f;
+                break;
+            case EffectType.BombExplosion:
+                targetHit = 2.0f;
+                break;
+            case EffectType.BossExplosion:
+                targetHit = 3.0f;
+                break;
+
+        }
+        animator.SetFloat("TargetHit", targetHit);
     }
 
     public void EndOfAnimation()
@@ -24,14 +42,7 @@ public class HitAnimation : MonoBehaviour
 
     private void Orient(Vector2 hitDirection)
     {
-        var v = transform.localScale;
-        v.x *= hitDirection.x;
-        transform.localScale = v;
+        var rotation = Quaternion.FromToRotation(Vector3.right, hitDirection);
+        transform.rotation = rotation;
     }
-}
-
-public enum ObjectHit
-{
-    SolidObject,
-    Body
 }

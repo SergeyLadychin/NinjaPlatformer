@@ -7,7 +7,7 @@ using UnityEngine;
 [Serializable]
 public class WeaponItem
 {
-    private bool buttonPressed = false;
+    private bool buttonPressed;
 
     public string name;
     public Weapon weapon;
@@ -18,7 +18,7 @@ public class WeaponItem
     {
         if (!buttonPressed)
         {
-            buttonPressed = weapon.inputManager.GetButtonStatus(fireButton);
+            buttonPressed = weapon.inputManager.GetFireButtonStatus(weapon.transform.position, fireButton);
         }
     }
 

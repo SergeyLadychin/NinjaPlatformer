@@ -45,9 +45,19 @@ public class UserInputManager : MonoBehaviour, IInputManager
         }
     }
 
-    public bool GetButtonStatus(string button)
+    public bool GetFireButtonStatus(Vector3 weaponPosition, string button)
     {
         return this.enabled && Input.GetButtonDown(button);
+    }
+
+    public bool GetActivateButtonStatus(string button)
+    {
+        return this.enabled && Input.GetButtonDown(button);
+    }
+
+    public Vector3 GetMousePosition(Vector3 weaponPosition)
+    {
+        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
     public StateInput GetStateInput()

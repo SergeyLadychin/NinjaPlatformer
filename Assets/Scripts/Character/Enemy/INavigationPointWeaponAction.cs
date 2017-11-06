@@ -4,5 +4,9 @@ using UnityEngine;
 
 public interface INavigationPointWeaponAction
 {
-    WeaponActions CheckWeaponFire(Transform objectPosition, Vector2 direction);
+    bool SwitchWeaponGroup(string activationButton);
+    WeaponActions CheckWeaponFire(Vector3 objectPosition, Vector2 direction);
+    Vector3 GetMousePosition(Vector3 weaponPosition);
+    bool ChangePoint();
+    void Reset();
 }

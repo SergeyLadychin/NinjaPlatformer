@@ -11,13 +11,19 @@ public class ShootOnSiteWeaponAction : MonoBehaviour, INavigationPointWeaponActi
     public float viewDistance;
     public LayerMask solidObjects;
 
-    public WeaponActions CheckWeaponFire(Transform objectPosition, Vector2 direction)
+    public bool SwitchWeaponGroup(string activationButton)
+    {
+        return false;
+    }
+
+    public WeaponActions CheckWeaponFire(Vector3 weaponPosition, Vector2 direction)
     {
         var result = WeaponActions.None;
-        var hit = Physics2D.Raycast(transform.position, direction, viewDistance, solidObjects);
-        Debug.DrawLine(transform.position, transform.position + (Vector3)direction * viewDistance, Color.green);
+        var hit = Physics2D.Raycast(weaponPosition, direction, viewDistance, solidObjects);
+        Debug.DrawLine(weaponPosition, weaponPosition + (Vector3)direction * viewDistance, Color.green);
         if (hit.rigidbody && hit.rigidbody.CompareTag(Constants.PlayerTag))
         {
+            Debug.DrawLine(weaponPosition, weaponPosition + (Vector3)direction * viewDistance, Color.red);
             if (stopToShoot)
             {
                 if (!stopMoving)
@@ -34,6 +40,21 @@ public class ShootOnSiteWeaponAction : MonoBehaviour, INavigationPointWeaponActi
         }
 
         return result;
+    }
+
+    public Vector3 GetMousePosition(Vector3 weaponPosition)
+    {
+        return Vector3.zero;
+    }
+
+    public bool ChangePoint()
+    {
+        return true;
+    }
+
+    public void Reset()
+    {
+        //Do nothing
     }
 
     private IEnumerator InteruptMovement()

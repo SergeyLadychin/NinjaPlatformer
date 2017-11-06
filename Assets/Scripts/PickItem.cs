@@ -1,31 +1,61 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PickItem : MonoBehaviour
 {
-    private IPickable pickObject;
     private bool pickedUp;
 
-    public string targetTag;
-    public GameObject pickUpCounter;
+    public PickUpParameters[] parameters;
 
     void Awake()
     {
-        pickObject = pickUpCounter.GetComponent<IPickable>();
-        if (pickObject == null)
+        for (int i = 0; i < parameters.Length; i++)
         {
-            Debug.LogError("Pick Up Counter object does not implement IPickable interface.");
+            parameters[i].Init();
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(targetTag) && !pickedUp)
+        if (!pickedUp)
         {
-            pickObject.Add();
-            pickedUp = true;
-            Destroy(this.gameObject);
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (other.CompareTag(parameters[i].targetTag))
+                {
+                    parameters[i].Add();
+                    pickedUp = true;
+                }
+            }
+            if (pickedUp)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+    }
+}
+
+[Serializable]
+public class PickUpParameters
+{
+    private IPickable pickObject;
+
+    public string targetTag;
+    public GameObject pickUpCounter;
+
+    public void Add()
+    {
+        pickObject.Add();
+    }
+
+    public void Init()
+    {
+        pickObject = pickUpCounter.GetComponent<IPickable>();
+        if (pickObject == null)
+        {
+            Debug.LogError("Pick Up Counter object does not implement IPickable interface.");
         }
     }
 }

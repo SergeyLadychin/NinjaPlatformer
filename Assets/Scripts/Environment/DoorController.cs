@@ -10,11 +10,28 @@ public class DoorController : MonoBehaviour
     public Sprite openDoor;
     public Sprite lockedDoor;
     public Sprite closedDoor;
+    public bool lockDoorOnEvent;
 
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = closedDoor;
+    }
+
+    void OnEnable()
+    {
+        if (lockDoorOnEvent)
+        {
+            EventManager.StartListen("LockDoor", LockDoor);
+        }
+    }
+
+    void OnDisable()
+    {
+        if (lockDoorOnEvent)
+        {
+            EventManager.StopListen("LockDoor", LockDoor);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

@@ -7,7 +7,7 @@ public class MoveToNextPointAction : MonoBehaviour, INavigationPointMoveAction
     private const float sqrDistanceThreshold = 0.01f;
     private bool actionCompleted;
     private bool changePoint;
-    private NavigationPoint point;
+    private NavigationPoint currentPoint;
 
     public MoveAxis moveDirection;
     public float validationDistance = sqrDistanceThreshold;
@@ -17,7 +17,7 @@ public class MoveToNextPointAction : MonoBehaviour, INavigationPointMoveAction
 
     void Start()
     {
-        point = GetComponent<NavigationPoint>();
+        currentPoint = GetComponent<NavigationPoint>();
     }
 
     public void ApplyToObject(Transform objectPosition, ref StateInput objectInput)
@@ -66,7 +66,7 @@ public class MoveToNextPointAction : MonoBehaviour, INavigationPointMoveAction
 
     private void UpdateAxisInput(Transform objectPosition, float moveMagnitude, ref AxisInput axisInput)
     {
-        axisInput.magnitude = moveMagnitude * Mathf.Sign(GetVectorComponent(point.nextPoint.transform.position) - GetVectorComponent(objectPosition.position));
+        axisInput.magnitude = moveMagnitude * Mathf.Sign(GetVectorComponent(currentPoint.nextPoint.transform.position) - GetVectorComponent(objectPosition.position));
         axisInput.buttonPressed = true;
     }
 
@@ -77,7 +77,7 @@ public class MoveToNextPointAction : MonoBehaviour, INavigationPointMoveAction
 
     private bool NextPointReached(Transform objectPosition)
     {
-        return (point.nextPoint.transform.position - objectPosition.position).sqrMagnitude <= validationDistance;
+        return (currentPoint.nextPoint.transform.position - objectPosition.position).sqrMagnitude <= validationDistance;
     }
 
     private IEnumerator WaitToMove()

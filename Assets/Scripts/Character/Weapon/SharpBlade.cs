@@ -22,7 +22,8 @@ public class SharpBlade : Weapon
             var enemy = colliders[i].gameObject.GetComponent<Character>();
             if (enemy)
             {
-                enemy.TakeDamage(damage);
+                var raycastHit = Physics2D.Raycast(transform.position, enemy.transform.position - transform.position, 2 * attackRadius);
+                enemy.TakeDamage(damage, raycastHit.point, raycastHit.normal);
             }
         }
         animator.SetBool("BladeAttack", false);

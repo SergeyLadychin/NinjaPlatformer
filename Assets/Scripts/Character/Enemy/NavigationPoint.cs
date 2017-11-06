@@ -17,14 +17,23 @@ public class NavigationPoint : MonoBehaviour
     {
         pointMoveActions = GetComponents<INavigationPointMoveAction>();
         pointWeaponAction = GetComponent<INavigationPointWeaponAction>();
+        if (pointWeaponAction == null && pointMoveActions.Length == 0)
+        {
+            Debug.LogWarningFormat("Navigation point doesn't have any actions. Instance ID: {0}", this.gameObject.GetInstanceID());
+        }
     }
 
-    public bool GetAttackButtonStatus(Transform objectPosition, Vector2 objectDirection, string button)
+    public bool GetActivateButtonStatus(string activationButton)
+    {
+        return pointWeaponAction != null && pointWeaponAction.SwitchWeaponGroup(activationButton);
+    }
+
+    public bool GetFireButtonStatus(Vector3 weaponPosition, Vector2 objectDirection, string button)
     {
         if (pointWeaponAction == null)
             return false;
 
-        var actions = pointWeaponAction.CheckWeaponFire(objectPosition, objectDirection);
+        var actions = pointWeaponAction.CheckWeaponFire(weaponPosition, objectDirection);
         postponeMoveActions = (actions & WeaponActions.Holt) == WeaponActions.Holt;
         return (actions & WeaponActions.Shoot) == WeaponActions.Shoot;
     }
@@ -38,15 +47,43 @@ public class NavigationPoint : MonoBehaviour
         {
             pointMoveActions[i].ApplyToObject(objectPosition, ref objectInput);
         }
-        return pointMoveActions.Length != 0 && pointMoveActions.All(a => a.ChangePoint(objectPosition));
+
+        if (nextPoint == null)
+            return false;
+
+        bool result = false;
+        if (pointMoveActions.Length != 0)
+        {
+            if (pointMoveActions.All(a => a.ChangePoint(objectPosition)))
+            {
+                result = pointWeaponAction == null || pointWeaponAction.ChangePoint();
+            }
+        }
+        else
+        {
+            result = pointWeaponAction != null && pointWeaponAction.ChangePoint();
+        }
+
+        return result;
     }
 
     public void ResetActions()
     {
+        if (pointWeaponAction != null)
+            pointWeaponAction.Reset();
+
         for (int i = 0; i < pointMoveActions.Length; i++)
         {
             pointMoveActions[i].Reset();
         }
+    }
+
+    public Vector3 GetMousePosition(Vector3 weaponPosition)
+    {
+        if (pointWeaponAction == null)
+            return Vector3.zero;
+
+        return pointWeaponAction.GetMousePosition(weaponPosition);
     }
 }
 

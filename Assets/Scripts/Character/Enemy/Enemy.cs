@@ -16,8 +16,9 @@ public class Enemy : Character
         EventManager.StopListen(Constants.PlayerDeathEvent, PlayerDead);
     }
 
-    public override void TakeDamage(int damageAmount)
+    public override void TakeDamage(int damageAmount, Vector2 hitPosition, Vector2 hitDirection)
     {
+        HitManager.SpawnHitEffect(hitPosition, hitDirection, EffectType.Blood);
         health -= damageAmount;
         if (health <= 0)
         {
@@ -28,7 +29,7 @@ public class Enemy : Character
         }
     }
 
-    private IEnumerator DestructionDelay()
+    protected IEnumerator DestructionDelay()
     {
         yield return new WaitForSeconds(destructionDelay);
         Destroy(gameObject);

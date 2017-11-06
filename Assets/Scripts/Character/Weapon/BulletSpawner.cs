@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class BulletSpawner : Weapon
 {
+    public float lifeTime;
     public ObjectGetter bulletGetter;
-    public ObjectGetter ammoHitGetter;
 
     public override float OnFire()
     {
@@ -16,7 +16,9 @@ public class BulletSpawner : Weapon
 
     public override void Fire()
     {
-        Bullet bullet = bulletGetter.Get<Bullet>(transform.position, transform.rotation);
+        var flyDirection = controller.GetFacingDirection();
+        var rotation = Quaternion.FromToRotation(Vector3.right, flyDirection);
+        Bullet bullet = bulletGetter.Get<Bullet>(transform.position, rotation);
 
         if (bulletGetter.IsFromPool())
         {
@@ -27,22 +29,13 @@ public class BulletSpawner : Weapon
             bullet.SetDisableFunc(Destroy);
         }
 
-        bullet.flyDirection = controller.GetFacingDirection();
-        bullet.ammoHitGetter = ammoHitGetter;
-
-        Orient(bullet);
+        bullet.flyDirection = flyDirection;
+        bullet.lifeTime = lifeTime;
     }
 
     public override bool IsAvaliable()
     {
         return true;
-    }
-
-    private void Orient(Bullet bullet)
-    {
-        var v = bullet.transform.localScale;
-        v.x *= bullet.flyDirection.x;
-        bullet.transform.localScale = v;
     }
 }
 

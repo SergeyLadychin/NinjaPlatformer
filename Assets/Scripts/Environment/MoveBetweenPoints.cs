@@ -12,6 +12,25 @@ public class MoveBetweenPoints : MonoBehaviour
     public float speed = 0.5f;
     public bool moveCircular;
 
+    public bool stopOnEvent;
+    public string eventName;
+
+    void OnEnable()
+    {
+        if (stopOnEvent)
+        {
+            EventManager.StartListen(eventName, StopMoving);
+        }
+    }
+
+    void OnDisable()
+    {
+        if (stopOnEvent)
+        {
+            EventManager.StopListen(eventName, StopMoving);
+        }
+    }
+
     void Awake()
     {
         multiplier = 1;
@@ -39,5 +58,10 @@ public class MoveBetweenPoints : MonoBehaviour
             }
             yield return null;
         }
+    }
+
+    private void StopMoving()
+    {
+        StopCoroutine("Move");
     }
 }

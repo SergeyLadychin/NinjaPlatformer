@@ -17,5 +17,5 @@ public abstract class Character : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public abstract void TakeDamage(int damageAmount);
+    public abstract void TakeDamage(int damageAmount, Vector2 hitPosition, Vector2 hitDirection);
 }

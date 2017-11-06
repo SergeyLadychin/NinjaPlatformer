@@ -13,7 +13,7 @@ public abstract class Weapon : MonoBehaviour
     [HideInInspector]
     public IInputManager inputManager;
 
-    public void Init(CharacterController2D characterController, Animator charcterAnimator, IInputManager inputManager)
+    public virtual void Init(CharacterController2D characterController, Animator charcterAnimator, IInputManager inputManager)
     {
         controller = characterController;
         animator = charcterAnimator;

@@ -35,13 +35,15 @@ public class BombController : MonoBehaviour
     {
         _rigidbody2D.simulated = false;
         _rigidbody2D.velocity = Vector2.zero;
+        HitManager.SpawnHitEffect(transform.position, Vector3.right, EffectType.BombExplosion);
         var colliders = Physics2D.OverlapCircleAll(transform.position, detonationRadius);
         for (int i = 0; i < colliders.Length; i++)
         {
             var character = colliders[i].GetComponent<Character>();
             if (character)
             {
-                character.TakeDamage(damage);
+                var raycastHit = Physics2D.Raycast(transform.position, character.transform.position - transform.position, 2 * detonationRadius);
+                character.TakeDamage(damage, raycastHit.point, -raycastHit.normal);
             }
         }
         Destroy(gameObject);

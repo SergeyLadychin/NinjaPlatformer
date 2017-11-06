@@ -13,9 +13,19 @@ public class AIInputManager : MonoBehaviour, IInputManager
     public ClimbCheck climbCheck;
     public NavigationPoint firstNavigationPoint;
 
-    public bool GetButtonStatus(string button)
+    public bool GetFireButtonStatus(Vector3 weaponPosition, string button)
     {
-        return currentPoint.GetAttackButtonStatus(transform, controller.GetFacingDirection(), button);
+        return currentPoint.GetFireButtonStatus(weaponPosition, controller.GetFacingDirection(), button);
+    }
+
+    public bool GetActivateButtonStatus(string button)
+    {
+        return currentPoint.GetActivateButtonStatus(button);
+    }
+
+    public Vector3 GetMousePosition(Vector3 weaponPosition)
+    {
+        return currentPoint.GetMousePosition(weaponPosition);
     }
 
     public void FixedUpdateInput()

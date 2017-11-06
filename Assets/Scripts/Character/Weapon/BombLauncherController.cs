@@ -7,7 +7,6 @@ public class BombLauncherController : Weapon, IPickable
     private LineRenderer lineRenderer;
     private const int segmentCount = 50;
     private Vector3 velocity;
-    private Vector3 parentPosition;
 
     public int count;
     public float flyTime = 1.0f;
@@ -15,11 +14,12 @@ public class BombLauncherController : Weapon, IPickable
     public GameObject bomb;
     public Vector2 positionOffset;
 
+    public BombDisplayManager displayManager;
+
     void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = segmentCount + 1;
-        parentPosition = transform.parent.position;
     }
 
     void OnEnable()
@@ -31,14 +31,24 @@ public class BombLauncherController : Weapon, IPickable
 
     void Update()
     {
-        var endPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var endPosition = inputManager.GetMousePosition(transform.position);
         endPosition.z = transform.position.z;
+
         UpdateStartPosition(endPosition);
+
         var startPosition = transform.position;
-        
         velocity = CalculateStartVelocity(startPosition, endPosition);
 
         UpdateLine(new [] { startPosition, endPosition}, velocity * flyTime);
+    }
+
+    public override void Init(CharacterController2D characterController, Animator charcterAnimator, IInputManager inputManager)
+    {
+        base.Init(characterController, charcterAnimator, inputManager);
+        if (displayManager != null)
+        {
+            count = PickUpManager.GetInstance().GetCount(Constants.BombPickUpName);
+        }
     }
 
     public override void Activate()
@@ -62,6 +72,11 @@ public class BombLauncherController : Weapon, IPickable
         var bombObject = Instantiate(bomb, transform.position, Quaternion.identity);
         var bombController = bombObject.GetComponent<BombController>();
         bombController.ThrowBomb(velocity);
+        if (displayManager != null)
+        {
+            PickUpManager.GetInstance().Remove(Constants.BombPickUpName, 1);
+            displayManager.UpdateText();
+        }
         count--;
     }
 
@@ -115,18 +130,10 @@ public class BombLauncherController : Weapon, IPickable
         }
     }
 
-    private void UpdateStartPosition(Vector2 endPosition)
+    private void UpdateStartPosition(Vector3 endPosition)
     {
         var facingDirection = controller.GetFacingDirection();
-        var targetSide = endPosition - (Vector2) parentPosition;
-        var dotProduct = Vector2.Dot(targetSide, facingDirection);
-        if (dotProduct > 0)
-        {
-            transform.localPosition = new Vector3(positionOffset.x, positionOffset.y, transform.localPosition.z);
-        }
-        else
-        {
-            transform.localPosition = new Vector3(-1 * positionOffset.x, positionOffset.y, transform.localPosition.z);
-        }
+        var targetSide = endPosition.x - transform.parent.position.x;
+        transform.localPosition = new Vector3(Mathf.Sign(facingDirection.x * targetSide) * positionOffset.x, positionOffset.y, transform.localPosition.z);
     }
 }

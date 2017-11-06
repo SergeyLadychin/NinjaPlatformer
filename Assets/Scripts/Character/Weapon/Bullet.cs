@@ -10,11 +10,10 @@ public class Bullet : MonoBehaviour
     private Action<GameObject> disableAction;
 
     public int damage;
-    public float lifeTime;
     public float speed;
     public string targetTag;
-    public ObjectGetter ammoHitGetter;
 
+    [HideInInspector] public float lifeTime;
     [HideInInspector] public Vector3 flyDirection;
 
     void Awake()
@@ -37,13 +36,14 @@ public class Bullet : MonoBehaviour
         if (other.CompareTag(targetTag))
         {
             var enemy = other.gameObject.GetComponent<Character>();
-            enemy.TakeDamage(damage);
+            enemy.TakeDamage(damage, transform.position, flyDirection);
 
-            Hit(ObjectHit.Body);
+            Hit();
         }
         else if (other.CompareTag("SolidObject"))
         {
-            Hit(ObjectHit.SolidObject);
+            Hit();
+            HitManager.SpawnHitEffect(transform.position, flyDirection, EffectType.SolidObjectHit);
         }
     }
 
@@ -52,13 +52,10 @@ public class Bullet : MonoBehaviour
         this.disableAction = disableAction;
     }
 
-    private void Hit(ObjectHit objectHit)
+    private void Hit()
     {
         StopCoroutine("Timer");
         StopCoroutine("Move");
-
-        var ammoHitObject = ammoHitGetter.Get<HitAnimation>(transform.position, transform.rotation);
-        ammoHitObject.Init(objectHit, flyDirection);
 
         spriteRenderer.enabled = false;
         body.simulated = false;
@@ -68,7 +65,7 @@ public class Bullet : MonoBehaviour
     {
         while (true)
         {
-            transform.Translate(flyDirection * speed * Time.deltaTime);
+            transform.Translate(flyDirection * speed * Time.deltaTime, Space.World);
             yield return null;
         }
     }

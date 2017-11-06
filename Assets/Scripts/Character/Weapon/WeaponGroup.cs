@@ -8,6 +8,7 @@ using UnityEngine;
 public class WeaponGroup
 {
     private int validatedItemIndex;
+    private IInputManager inputManager;
 
     public string name;
     public string activationButton;
@@ -16,6 +17,7 @@ public class WeaponGroup
 
     public void Init(CharacterController2D characterController, Animator characterAnimator, IInputManager inputManager)
     {
+        this.inputManager = inputManager;
         for (int i = 0; i < items.Length; i++)
         {
             items[i].weapon.Init(characterController, characterAnimator, inputManager);
@@ -83,5 +85,10 @@ public class WeaponGroup
     public bool IsAvaliable()
     {
         return items.Any(i => i.IsAvaliable());
+    }
+
+    public bool GetActivateButtonStatus()
+    {
+        return inputManager.GetActivateButtonStatus(activationButton);
     }
 }

@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Player : Character
 {
-    public override void TakeDamage(int damageAmount)
+    public override void TakeDamage(int damageAmount, Vector2 hitPosition, Vector2 hitDirection)
     {
+        HitManager.SpawnHitEffect(hitPosition, hitDirection, EffectType.Blood);
         health -= damageAmount;
         if (health <= 0 && !GameManager.GetInstance().godModeEnabled)
         {

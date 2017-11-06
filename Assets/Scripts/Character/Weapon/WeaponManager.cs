@@ -73,7 +73,7 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    //FireEvent and FinishFireEvent functions used in pair to syncronize hit and character animation.
+    //FireEvent and FinishFireEvent functions used in pair to syncronize attack and character animation.
 
     //Function that must be added to appropriate animation clip(using event) to perform attack
     public void FireEvent(AnimationEvent animEvent)
@@ -113,7 +113,7 @@ public class WeaponManager : MonoBehaviour
         //default group is active if others inactive.
         for (int i = 1; i < weaponGroups.Length; i++)
         {
-            if (weaponGroups[i].IsAvaliable() && Input.GetButtonDown(weaponGroups[i].activationButton))
+            if (weaponGroups[i].IsAvaliable() && weaponGroups[i].GetActivateButtonStatus())
             {
                 activeGroupIndex = i;
                 buttonPressed = true;

@@ -7,5 +7,7 @@ public interface IInputManager
     void FixedUpdateInput();
     StateInput GetStateInput();
     void ClearInput();
-    bool GetButtonStatus(string button);
+    bool GetFireButtonStatus(Vector3 weaponPosition, string button);
+    bool GetActivateButtonStatus(string button);
+    Vector3 GetMousePosition(Vector3 weaponPosition);
 }
