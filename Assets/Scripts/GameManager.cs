@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public bool godModeEnabled;
     public float delayAfterPlayerDeath;
 
-    void Awake ()
+    void Awake()
     {
         if (instance == null)
         {
@@ -24,6 +24,16 @@ public class GameManager : MonoBehaviour
         //DontDestroyOnLoad(instance);
 	}
 
+    void OnEnable()
+    {
+        EventManager.StartListen(Constants.GoToMainMenuEvent, GoToMainMenu);
+    }
+
+    void OnDisable()
+    {
+        EventManager.StopListen(Constants.GoToMainMenuEvent, GoToMainMenu);
+    }
+
     public static GameManager GetInstance()
     {
         return instance;
@@ -31,7 +41,7 @@ public class GameManager : MonoBehaviour
 
     public void ReloadCurrentLevel()
     {
-        PickUpManager.GetInstance().Restore();
+        PickUpManager.Restore();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -53,13 +63,13 @@ public class GameManager : MonoBehaviour
 
     public void GoToNextLevel(string nextLevelName)
     {
-        PickUpManager.GetInstance().Save();
+        PickUpManager.Save();
         LoadLevel(nextLevelName);
     }
 
     public void GoToMainMenu()
     {
-        PickUpManager.GetInstance().ResetCounts();
+        PickUpManager.ResetCounts();
         LoadLevel("MainMenu");
     }
 

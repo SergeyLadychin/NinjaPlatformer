@@ -13,11 +13,29 @@ public class Player : Character
             controller.SetSimulated(false);
             animator.SetTrigger("Die");
             animator.SetBool("Dead", true);
+            inputManager.enabled = false;
             characterState.enabled = false;
             EventManager.TriggerEvent(Constants.PlayerDeathEvent);
 
             StartCoroutine(AfterPlayerDeath());
         }
+    }
+
+    protected override void SubscribeEvents()
+    {
+        base.SubscribeEvents();
+        EventManager.StartListen(Constants.DeactivatePlayerControlEvent, DeactivatePlayerControl);
+    }
+
+    protected override void UnsubscribeEvents()
+    {
+        base.UnsubscribeEvents();
+        EventManager.StopListen(Constants.DeactivatePlayerControlEvent, DeactivatePlayerControl);
+    }
+
+    private void DeactivatePlayerControl()
+    {
+        inputManager.enabled = false;
     }
 
     private IEnumerator AfterPlayerDeath()

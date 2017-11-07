@@ -36,46 +36,49 @@ public class PickUpManager : MonoBehaviour
         savedPickUps = new Dictionary<string, int>();
     }
 
-    public int GetCount(string pickUp)
+    public static int GetCount(string pickUp)
     {
+        if (instance == null)
+            return 0;
+
         int count;
-        if (pickUps.TryGetValue(pickUp, out count))
+        if (instance.pickUps.TryGetValue(pickUp, out count))
         {
             return count;
         }
         return 0;
     }
 
-    public void Add(string pickUp, int count)
+    public static void Add(string pickUp, int count)
     {
-        if (pickUps.ContainsKey(pickUp))
+        if (instance.pickUps.ContainsKey(pickUp))
         {
-            pickUps[pickUp] += count;
+            instance.pickUps[pickUp] += count;
         }
         else
         {
-            pickUps[pickUp] = count;
+            instance.pickUps[pickUp] = count;
         }
     }
 
-    public void Remove(string pickUp, int count)
+    public static void Remove(string pickUp, int count)
     {
-        pickUps[pickUp] -= count;
+        instance.pickUps[pickUp] -= count;
     }
 
-    public void Save()
+    public static void Save()
     {
-        savedPickUps = new Dictionary<string, int>(pickUps);
+        instance.savedPickUps = new Dictionary<string, int>(instance.pickUps);
     }
 
-    public void Restore()
+    public static void Restore()
     {
-        pickUps = new Dictionary<string, int>(savedPickUps);
+        instance.pickUps = new Dictionary<string, int>(instance.savedPickUps);
     }
 
-    public void ResetCounts()
+    public static void ResetCounts()
     {
-        savedPickUps.Clear();
-        pickUps.Clear();
+        instance.savedPickUps.Clear();
+        instance.pickUps.Clear();
     }
 }

@@ -4,17 +4,11 @@ using UnityEngine;
 
 public class Enemy : Character
 {
+    private SpriteRenderer spriteRenderer;
+    private float fadeOutTime;
+
+    public AnimationCurve fadeOutCurve;
     public float destructionDelay;
-
-    void OnEnable()
-    {
-        EventManager.StartListen(Constants.PlayerDeathEvent, PlayerDead);
-    }
-
-    void OnDisable()
-    {
-        EventManager.StopListen(Constants.PlayerDeathEvent, PlayerDead);
-    }
 
     public override void TakeDamage(int damageAmount, Vector2 hitPosition, Vector2 hitDirection)
     {
@@ -24,19 +18,53 @@ public class Enemy : Character
         {
             controller.SetSimulated(false);
             animator.SetTrigger("Dead");
-            characterState.enabled = false;
-            StartCoroutine(DestructionDelay());
+            inputManager.enabled = false;
+            StartCoroutine(EnemyDestruction());
         }
     }
 
-    protected IEnumerator DestructionDelay()
+    protected virtual IEnumerator EnemyDestruction()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         yield return new WaitForSeconds(destructionDelay);
-        Destroy(gameObject);
+        animator.SetTrigger("FadeOut");
+        StartCoroutine("FadeOut");
+    }
+
+    protected override void SubscribeEvents()
+    {
+        base.SubscribeEvents();
+        EventManager.StartListen(Constants.PlayerDeathEvent, PlayerDead);
+    }
+
+    protected override void UnsubscribeEvents()
+    {
+        base.UnsubscribeEvents();
+        EventManager.StopListen(Constants.PlayerDeathEvent, PlayerDead);
     }
 
     private void PlayerDead()
     {
-        characterState.enabled = false;
+        inputManager.enabled = false;
+    }
+
+    private IEnumerator FadeOut()
+    {
+        while (true)
+        {
+            if (spriteRenderer.color.a > Mathf.Epsilon)
+            {
+                var color = spriteRenderer.color;
+                color.a = fadeOutCurve.Evaluate(fadeOutTime);
+                spriteRenderer.color = color;
+                fadeOutTime += Time.deltaTime;
+            }
+            else
+            {
+                StopCoroutine("FadeOut");
+                Destroy(this.gameObject, 1.0f);
+            }
+            yield return null;
+        }
     }
 }

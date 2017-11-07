@@ -9,12 +9,13 @@ public class Bullet : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Action<GameObject> disableAction;
 
+    private bool targetHitted;
+    private float lifeTime;
+    private Vector3 flyDirection;
+
     public int damage;
     public float speed;
     public string targetTag;
-
-    [HideInInspector] public float lifeTime;
-    [HideInInspector] public Vector3 flyDirection;
 
     void Awake()
     {
@@ -22,19 +23,12 @@ public class Bullet : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
     }
 
-    void OnEnable()
-    {
-        spriteRenderer.enabled = true;
-        body.simulated = true;
-
-        StartCoroutine(Timer(lifeTime));
-        StartCoroutine("Move");
-    }
-
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(targetTag))
+        if (!targetHitted && other.CompareTag(targetTag))
         {
+            targetHitted = true;
+
             var enemy = other.gameObject.GetComponent<Character>();
             enemy.TakeDamage(damage, transform.position, flyDirection);
 
@@ -47,9 +41,19 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    public void SetDisableFunc(Action<GameObject> disableAction)
+    public void Init(Vector3 flyDirection, float lifeTime, Action<GameObject> disableAction)
     {
+        this.flyDirection = flyDirection;
+        this.lifeTime = lifeTime;
         this.disableAction = disableAction;
+
+        targetHitted = false;
+
+        spriteRenderer.enabled = true;
+        body.simulated = true;
+
+        StartCoroutine(Timer(lifeTime));
+        StartCoroutine("Move");
     }
 
     private void Hit()

@@ -47,7 +47,7 @@ public class BombLauncherController : Weapon, IPickable
         base.Init(characterController, charcterAnimator, inputManager);
         if (displayManager != null)
         {
-            count = PickUpManager.GetInstance().GetCount(Constants.BombPickUpName);
+            count = PickUpManager.GetCount(Constants.BombPickUpName);
         }
     }
 
@@ -71,10 +71,10 @@ public class BombLauncherController : Weapon, IPickable
     {
         var bombObject = Instantiate(bomb, transform.position, Quaternion.identity);
         var bombController = bombObject.GetComponent<BombController>();
-        bombController.ThrowBomb(velocity);
+        bombController.Init(velocity);
         if (displayManager != null)
         {
-            PickUpManager.GetInstance().Remove(Constants.BombPickUpName, 1);
+            PickUpManager.Remove(Constants.BombPickUpName, 1);
             displayManager.UpdateText();
         }
         count--;

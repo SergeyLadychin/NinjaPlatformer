@@ -13,7 +13,16 @@ public class PlayerSpawner : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         animator.enabled = false;
-        Invoke("StartAnimator", delayBeforeSpawn);
+    }
+
+    void OnEnable()
+    {
+        EventManager.StartListen(Constants.ActivateCharactersEvent, Activate);
+    }
+
+    void OnDisable()
+    {
+        EventManager.StopListen(Constants.ActivateCharactersEvent, Activate);
     }
 
     public void Spawn()
@@ -30,5 +39,10 @@ public class PlayerSpawner : MonoBehaviour
     private void StartAnimator()
     {
         animator.enabled = true;
+    }
+
+    private void Activate()
+    {
+        StartAnimator();
     }
 }

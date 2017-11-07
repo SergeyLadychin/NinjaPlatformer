@@ -14,12 +14,12 @@ public class BombDisplayManager : MonoBehaviour, IPickable
 
     public void Add()
     {
-        PickUpManager.GetInstance().Add(Constants.BombPickUpName, 1);
+        PickUpManager.Add(Constants.BombPickUpName, 1);
         UpdateText();
     }
 
     public void UpdateText()
     {
-        granadeText.text = PickUpManager.GetInstance().GetCount(Constants.BombPickUpName).ToString();
+        granadeText.text = PickUpManager.GetCount(Constants.BombPickUpName).ToString();
     }
 }

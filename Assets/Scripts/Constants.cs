@@ -13,4 +13,8 @@ public class Constants
 
     //Event names
     public const string PlayerDeathEvent = "PlayerDeath";
+    public const string ActivateCharactersEvent = "ActivateCharacters";
+    public const string DeactivatePlayerControlEvent = "DeactivatePlayerControl";
+    public const string GoToMainMenuEvent = "GoToMainMenu";
+    public const string ShowCreditsEvent = "ShowCredits";
 }

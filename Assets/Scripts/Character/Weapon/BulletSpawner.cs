@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Animations;
 using UnityEngine;
@@ -22,15 +23,12 @@ public class BulletSpawner : Weapon
 
         if (bulletGetter.IsFromPool())
         {
-            bullet.SetDisableFunc(obj => obj.SetActive(false));
+            bullet.Init(flyDirection, lifeTime, obj => obj.SetActive(false));
         }
         else
         {
-            bullet.SetDisableFunc(Destroy);
+            bullet.Init(flyDirection, lifeTime, Destroy);
         }
-
-        bullet.flyDirection = flyDirection;
-        bullet.lifeTime = lifeTime;
     }
 
     public override bool IsAvaliable()
