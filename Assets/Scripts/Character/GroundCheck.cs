@@ -7,6 +7,7 @@ public class GroundCheck : MonoBehaviour
     private const float groundCheckRadius = 0.1f;
     private Collider2D[] colliders;
 
+    public float checkPointsDistance;
     public LayerMask whatIsGround;
 
     void Start()
@@ -16,8 +17,14 @@ public class GroundCheck : MonoBehaviour
 
     public bool IsGrounded()
     {
-        var collidersCount = Physics2D.OverlapCircleNonAlloc(transform.position, groundCheckRadius, colliders, whatIsGround);
-        Debug.DrawLine(transform.position, transform.position + Vector3.down * groundCheckRadius, Color.green);
+        return IsLegGrounded(new Vector3(transform.position.x - checkPointsDistance, transform.position.y, transform.position.z))
+               || IsLegGrounded(new Vector3(transform.position.x + checkPointsDistance, transform.position.y, transform.position.z));
+    }
+
+    private bool IsLegGrounded(Vector3 legPosition)
+    {
+        var collidersCount = Physics2D.OverlapCircleNonAlloc(legPosition, groundCheckRadius, colliders, whatIsGround);
+        Debug.DrawLine(legPosition, legPosition + Vector3.down * groundCheckRadius, Color.green);
         for (int i = 0; i < collidersCount; i++)
         {
             if (colliders[i].gameObject != gameObject)

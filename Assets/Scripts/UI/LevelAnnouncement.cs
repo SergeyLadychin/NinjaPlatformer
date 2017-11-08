@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,10 +7,11 @@ public class LevelAnnouncement : MonoBehaviour
 {
     private bool showNextAnnouncement = true;
     private int currentAnnouncementIndex = -1;
-    private float currentTime;
 
     public CallMenu callMenuObject;
     public Text textField;
+    [Tooltip("Allow interupt with Escape button.")]
+    public bool allowInteruption;
     public bool deactivateInTheEnd;
     public AnnouncementParameters[] announcements;
 
@@ -20,7 +20,7 @@ public class LevelAnnouncement : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown("escape"))
+        if (allowInteruption && Input.GetKeyDown("escape"))
         {
             StopAllCoroutines();
 
@@ -31,7 +31,6 @@ public class LevelAnnouncement : MonoBehaviour
         {
             currentAnnouncementIndex++;
             showNextAnnouncement = false;
-            currentTime = 0.0f;
             if (currentAnnouncementIndex < announcements.Length)
             {
                 textField.text = announcements[currentAnnouncementIndex].text;
@@ -54,15 +53,16 @@ public class LevelAnnouncement : MonoBehaviour
 
     private IEnumerator FadeIn()
     {
+        var time = 0.0f;
         while (true)
         {
             if (Math.Abs(textField.color.a - 1.0f) > Mathf.Epsilon)
             {
-                UpdateAlpha(announcements[currentAnnouncementIndex].fadeInCurve);
+                UpdateAlpha(announcements[currentAnnouncementIndex].fadeInCurve, time);
+                time += Time.deltaTime;
             }
             else
             {
-                currentTime = 0.0f;
                 StartCoroutine(Show());
                 StopCoroutine("FadeIn");
             }
@@ -78,11 +78,13 @@ public class LevelAnnouncement : MonoBehaviour
 
     private IEnumerator FadeOut()
     {
+        var time = 0.0f;
         while (true)
         {
             if (textField.color.a > Mathf.Epsilon)
             {
-                UpdateAlpha(announcements[currentAnnouncementIndex].fadeOutCurve);
+                UpdateAlpha(announcements[currentAnnouncementIndex].fadeOutCurve, time);
+                time += Time.deltaTime;
             }
             else
             {
@@ -93,12 +95,11 @@ public class LevelAnnouncement : MonoBehaviour
         }
     }
 
-    private void UpdateAlpha(AnimationCurve curve)
+    private void UpdateAlpha(AnimationCurve curve, float time)
     {
         var fieldColor = textField.color;
-        fieldColor.a = curve.Evaluate(currentTime);
+        fieldColor.a = curve.Evaluate(time);
         textField.color = fieldColor;
-        currentTime += Time.deltaTime;
     }
 }
 
