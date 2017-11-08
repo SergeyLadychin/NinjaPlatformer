@@ -10,7 +10,6 @@ public class Bullet : MonoBehaviour
     private Action<GameObject> disableAction;
 
     private bool targetHitted;
-    private float lifeTime;
     private Vector3 flyDirection;
 
     public int damage;
@@ -44,7 +43,6 @@ public class Bullet : MonoBehaviour
     public void Init(Vector3 flyDirection, float lifeTime, Action<GameObject> disableAction)
     {
         this.flyDirection = flyDirection;
-        this.lifeTime = lifeTime;
         this.disableAction = disableAction;
 
         targetHitted = false;

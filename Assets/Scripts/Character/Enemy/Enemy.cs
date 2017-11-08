@@ -19,6 +19,7 @@ public class Enemy : Character
             controller.SetSimulated(false);
             animator.SetTrigger("Dead");
             inputManager.enabled = false;
+            characterState.enabled = false;
             StartCoroutine(EnemyDestruction());
         }
     }
